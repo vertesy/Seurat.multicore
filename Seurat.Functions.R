@@ -1,6 +1,7 @@
-
-# Mon Feb 25 13:18:09 2019 ------------------------------
-# https://satijalab.org/seurat/immune_alignment.html
+# ------------------------------------------------------------------------------------------
+## Seurat.Functions.R
+# ------------------------------------------------------------------------------------------
+# Source: self + web
 
 require(Seurat)
 require(doMC)
@@ -24,8 +25,8 @@ read10x <- function(dir) {
 
 # FindAllMarkers.multicore ------------------------------
 
-FindAllMarkers.multicore <- function(mydata = org, min_pct = 0.2, logfc_threshold=0.5 ){
-  nrClusters=length(unique(org@meta.data$'ident'))
+FindAllMarkers.multicore <- function(mydata = scObj, min_pct = 0.2, logfc_threshold=0.5 ){
+  nrClusters=length(unique(scObj@meta.data$'ident'))
   N=nrClusters-1
   
   ls.DE <- foreach(i=0:N) %dopar% {
@@ -44,7 +45,7 @@ FindAllMarkers.multicore <- function(mydata = org, min_pct = 0.2, logfc_threshol
 # Markers <- bplapply(0:N, FindMarker.wrapper,BPPARAM=MulticoreParam(3))
 
 # Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
-multiFeaturePlot.A4 <- function(list.of.genes, object = org, plot.reduction='umap'
+multiFeaturePlot.A4 <- function(list.of.genes, object = scObj, plot.reduction='umap'
                                 , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = ceiling(12/(nr.Col*nr.Row))
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99'
                                 , jpeg.res = 225, jpeg.q = 90) {
@@ -66,7 +67,7 @@ multiFeaturePlot.A4 <- function(list.of.genes, object = org, plot.reduction='uma
 
 
 # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg -----------------------
-multiFeatureHeatmap.A4 <- function(list.of.genes, object = org, gene.per.page=5
+multiFeatureHeatmap.A4 <- function(list.of.genes, object = scObj, gene.per.page=5
                                    , group.cells.by= "batch", plot.reduction='umap'
                                    , cex = ceiling(3/gene.per.page), sep_scale =T
                                    , gene.min.exp = 'q1', gene.max.exp = 'q99'
