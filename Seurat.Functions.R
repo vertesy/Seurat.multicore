@@ -40,12 +40,12 @@ read10x <- function(dir) {
 
 # FindAllMarkers.multicore ------------------------------
 
-FindAllMarkers.multicore <- function(mydata = scObj, min_pct = 0.2, logfc_threshold=0.5 ){
-  nrClusters=length(unique(scObj@meta.data$'ident'))
+FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0.5, only_pos=F ){
+  nrClusters=length(unique(obj@meta.data$'ident'))
   N=nrClusters-1
   
   ls.DE <- foreach(i=0:N) %dopar% {
-    FindMarkers(mydataset,ident.1=N, only.pos = TRUE, min.pct=min_pct, logfc.threshold = logfc_threshold)
+    FindMarkers(obj,ident.1=N, only.pos = only_pos, min.pct=min_pct, logfc.threshold = logfc_threshold)
   }; 
   return(ls.DE)
 }
@@ -59,11 +59,24 @@ FindAllMarkers.multicore <- function(mydata = scObj, min_pct = 0.2, logfc_thresh
 # }
 # Markers <- bplapply(0:N, FindMarker.wrapper,BPPARAM=MulticoreParam(3))
 
+# ------------------------------
+# check.genes ---------------------------------------
+check.genes <- function(list.of.genes = ClassicMarkers, object = org) {
+  missingGenes = setdiff(list.of.genes, rownames(object@data))
+  if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
+  intersect(list.of.genes, rownames(object@data))
+}
+
+
+
+
 # Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
-multiFeaturePlot.A4 <- function(list.of.genes, object = scObj, plot.reduction='umap'
+multiFeaturePlot.A4 <- function(list.of.genes, obj = org, plot.reduction='umap'
                                 , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = ceiling(12/(nr.Col*nr.Row))
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99'
                                 , jpeg.res = 225, jpeg.q = 90) {
+  
+  list.of.genes = check.genes(list.of.genes, object = obj)
   lsG = iterBy.over(1:l(list.of.genes), by=nr.Row*nr.Col)
   for (i in 1:l(lsG)) { print(i )
     genes = list.of.genes[lsG[[i]]]
@@ -81,24 +94,66 @@ multiFeaturePlot.A4 <- function(list.of.genes, object = scObj, plot.reduction='u
 }; 
 
 
+
+# plot.UMAP.tSNE.sidebyside ---------------------------------------------------------------------
+
+plot.UMAP.tSNE.sidebyside <- function(object = org, grouping = 'res.0.6',
+                                      no_legend = F,
+                                      do_return = TRUE,
+                                      do_label = T,
+                                      label_size = 10,
+                                      vector_friendly = TRUE,
+                                      cells_use = NULL,
+                                      no_axes = T,
+                                      pt_size = 0.5, 
+                                      width = hA4, heigth = 1.75*wA4, filetype = "pdf") { # , usePNG = F
+  
+  p1 <- DimPlot(object = object, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
+                , no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size
+                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size) + 
+    ggtitle("tSNE") + theme(plot.title = element_text(hjust = 0.5))
+  
+  p2 <- DimPlot(object = object, reduction.use = "umap", no.axes = no_axes, cells.use = cells_use
+                , no.legend = T, do.return = do_return, do.label = do_label, label.size = label_size
+                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size) + 
+    ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
+  
+  plots = plot_grid(p1, p2, labels=c("A", "B"), ncol = 2)
+  plotname=kpp( 'UMAP.tSNE', grouping, filetype)
+  cowplot::save_plot(filename = plotname, plot = plots 
+                     , ncol = 2 # we're saving a grid plot of 2 columns
+                     , nrow = 1 # and 2 rows
+                     , base_width = width
+                     , base_height = heigth
+                     # each individual subplot should have an aspect ratio of 1.3
+                     # , base_aspect_ratio = 1.5
+  )
+  # wplot_save_this(plotname = , w = width, h = heigth, PNG = usePNG)
+}
+
 # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg -----------------------
-multiFeatureHeatmap.A4 <- function(list.of.genes, object = scObj, gene.per.page=5
+# code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
+
+multiFeatureHeatmap.A4 <- function(list.of.genes, object = org, gene.per.page=5
                                    , group.cells.by= "batch", plot.reduction='umap'
-                                   , cex = ceiling(3/gene.per.page), sep_scale =T
+                                   , cex = ceiling(3/gene.per.page), sep_scale = F
                                    , gene.min.exp = 'q1', gene.max.exp = 'q99'
                                    , jpeg.res = 225, jpeg.q = 90) {
+  
+  list.of.genes = check.genes(list.of.genes, object = scObj)
+  
   lsG = iterBy.over(1:l(list.of.genes), by=gene.per.page)
   for (i in 1:l(lsG)) { print(i )
     genes = list.of.genes[lsG[[i]]]
     plotname = kpp(c("FeatureHeatmap",plot.reduction,i, genes, 'jpg' ))
-    
+    print(plotname)
     jjpegA4(plotname, r = jpeg.res, q = jpeg.q)
     try(
-      FeatureHeatmap(object, features.plot =genes , group.by = group.cells.by
+      FeatureHeatmap(object, features.plot =genes , group.by = group.cells.by 
                      , reduction.use = plot.reduction, do.return = F
                      , sep.scale = sep_scale, min.exp = gene.min.exp, max.exp = gene.max.exp
                      , pt.size = cex, key.position = "top")
-      , silent = T
+      , silent = F
     )
     try.dev.off()
   }
@@ -406,10 +461,10 @@ if (F) {
   p$'resolutions' = c(0.3, 0.6, 0.9)
   p$'num.ccs' = 15
   
-  FindClusters.multicore <- function(mydata = org, res = p$'resolutions' ){
+  FindClusters.multicore <- function(obj = org, res = p$'resolutions' ){
     
     ls.Clustering <- foreach(i=0:N) %dopar% {
-      FindClusters(org, reduction.type = "cca.aligned" 
+      FindClusters(obj, reduction.type = "cca.aligned" 
                    , resolution = res , dims.use = 1:p$'num.ccs'
                    , plot.SNN = T, print.output = F)
     }; 
@@ -424,5 +479,43 @@ if (F) {
   }
   
   
+}
+
+# replace zero indexed clusternames ------------------------------------------------
+fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj=org) {
+  obj@meta.data[ ,ColName.metadata] =  as.numeric(obj@meta.data[ ,ColName.metadata])+1  
+  print(obj@meta.data[ ,ColName.metadata])
+  return(obj)
+}
+
+
+# get Cells from metadata----
+mmeta <- function(ColName.metadata = 'batch', obj = org, as_numeric =F) {
+  x = as.named.vector(obj@meta.data[ ,ColName.metadata, drop=F])
+  if (as_numeric) {
+    as.numeric.wNames(x)+1
+  } else {x}
+}
+
+
+# mmeta.add <- function(ColName.metadata = 'res.0.6', newdata.vec=rep(1, nrow(obj@meta.data) ), obj = org, as_numeric =F) {
+#   stopifnot(length(newdata.vec) =  nrow(obj@meta.data))
+#   obj@meta.data[ ,ColName.metadata] <- newdata.vec
+#   }
+
+
+# Save ------------------------
+# requires MarkdownReportsDev (github)
+# OutDir="~/"
+
+isave <- function(..., showMemObject=T){
+  path_rdata = paste0("~/Documents/Rdata.files/", basename(OutDir))
+  dir.create(path_rdata)
+  
+  if (showMemObject) { memory.biggest.objects() }
+  fname = MarkdownReportsDev::kollapse(path_rdata, "/",idate(),...,".Rdata")
+  save.image( file = fname, compress=F)
+  MarkdownReportsDev::iprint("Saved, being compressed", fname)
+  system(paste("gzip", fname),  wait = FALSE) # execute in the background
 }
 
