@@ -8,6 +8,21 @@ require(doMC)
 
 
 
+# ### Functions
+# For parallel processing of other functions see 
+# 
+# - read10x
+# - FindAllMarkers.multicore
+# - multiFeaturePlot.A4
+# - multiFeatureHeatmap.A4
+# - LabelPoint
+# - LabelUR
+# - LabelUL
+# - LabelBR
+# - LabelBL
+
+
+
 # read10x from gzipped and using features.tsv [from SO]------------------------
 read10x <- function(dir) {
   names <- c("barcodes.tsv", "features.tsv", "matrix.mtx")
@@ -384,3 +399,30 @@ aFeaturePlot <- function (object, features.plot, min.cutoff = 'q1', max.cutoff =
 #   }
 # }
 # 
+
+# Work in progress ------------------------------------------------------------
+
+if (F) {
+  p$'resolutions' = c(0.3, 0.6, 0.9)
+  p$'num.ccs' = 15
+  
+  FindClusters.multicore <- function(mydata = org, res = p$'resolutions' ){
+    
+    ls.Clustering <- foreach(i=0:N) %dopar% {
+      FindClusters(org, reduction.type = "cca.aligned" 
+                   , resolution = res , dims.use = 1:p$'num.ccs'
+                   , plot.SNN = T, print.output = F)
+    }; 
+    
+    
+    # extract data
+    
+    
+    clusterings <- seurat@data.info %>% select(contains("res."))
+    head(clusterings)
+    return(ls.Clustering)
+  }
+  
+  
+}
+
