@@ -4,6 +4,7 @@
 # DO NOT RUN - these are just code snippets not a ready to go pipeline
 
 # rm(list=ls())
+require(tictoc)
 require(dplyr)
 require(gtools)
 require(cowplot)
@@ -119,13 +120,13 @@ ls2<- foreach(i=1:l(ls2)) %dopar% {
 l(ls2); ls20
 
 # FindVariableGenes cannot be parallelized sadly   ------------------------------
-start_time <- Sys.time()
+tic()
 for (i in 1:l(inNames)) { print(i)
   ls2[[i]]  <- FindVariableGenes(object = ls2[[i]], mean.function = ExpMean, dispersion.function = LogVMR,
                                  x.low.cutoff = 0.0125, x.high.cutoff = 3, y.cutoff = 0.5 )
   wplot_save_this(plotname = ppp("Var.genes.",inNames[i]), PNG = T)   
 }; say()
-end_time <- Sys.time(); end_time - start_time
+toc()
 
 # ScaleData is parallelizedialready  ------------------------------
 for (i in 1:l(inNames)) { print(i)
