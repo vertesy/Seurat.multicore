@@ -61,7 +61,7 @@ FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0
 
 # ------------------------------
 # check.genes ---------------------------------------
-check.genes <- function(list.of.genes = ClassicMarkers, object = org) {
+check.genes <- function(list.of.genes = ClassicMarkers, object = org) { # check if genes exist in your dataset
   missingGenes = setdiff(list.of.genes, rownames(object@data))
   if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
   intersect(list.of.genes, rownames(object@data))
@@ -72,7 +72,7 @@ check.genes <- function(list.of.genes = ClassicMarkers, object = org) {
 
 # Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
 multiFeaturePlot.A4 <- function(list.of.genes, obj = org, plot.reduction='umap'
-                                , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = ceiling(12/(nr.Col*nr.Row))
+                                , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = ceiling(10/(nr.Col*nr.Row))
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99'
                                 , jpeg.res = 225, jpeg.q = 90) {
   
@@ -95,6 +95,7 @@ multiFeaturePlot.A4 <- function(list.of.genes, obj = org, plot.reduction='umap'
 
 
 
+
 # plot.UMAP.tSNE.sidebyside ---------------------------------------------------------------------
 
 plot.UMAP.tSNE.sidebyside <- function(object = org, grouping = 'res.0.6',
@@ -106,7 +107,7 @@ plot.UMAP.tSNE.sidebyside <- function(object = org, grouping = 'res.0.6',
                                       cells_use = NULL,
                                       no_axes = T,
                                       pt_size = 0.5, 
-                                      width = hA4, heigth = 1.75*wA4, filetype = "pdf") { # , usePNG = F
+                                      width = hA4, heigth = 1.75*wA4, filetype = "pdf") { # plot a UMAP and tSNE sidebyside
   
   p1 <- DimPlot(object = object, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
                 , no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size
@@ -127,8 +128,7 @@ plot.UMAP.tSNE.sidebyside <- function(object = org, grouping = 'res.0.6',
                      , base_height = heigth
                      # each individual subplot should have an aspect ratio of 1.3
                      # , base_aspect_ratio = 1.5
-  )
-  # wplot_save_this(plotname = , w = width, h = heigth, PNG = usePNG)
+                     )
 }
 
 # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg -----------------------
@@ -136,8 +136,8 @@ plot.UMAP.tSNE.sidebyside <- function(object = org, grouping = 'res.0.6',
 
 multiFeatureHeatmap.A4 <- function(list.of.genes, object = org, gene.per.page=5
                                    , group.cells.by= "batch", plot.reduction='umap'
-                                   , cex = ceiling(3/gene.per.page), sep_scale = F
-                                   , gene.min.exp = 'q1', gene.max.exp = 'q99'
+                                   , cex = iround(3/gene.per.page), sep_scale = F
+                                   , gene.min.exp = 'q5', gene.max.exp = 'q95'
                                    , jpeg.res = 225, jpeg.q = 90) {
   
   list.of.genes = check.genes(list.of.genes, object = scObj)
@@ -482,7 +482,7 @@ if (F) {
 }
 
 # replace zero indexed clusternames ------------------------------------------------
-fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj=org) {
+fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj=org) { # fix zero indexing seurat clustering
   obj@meta.data[ ,ColName.metadata] =  as.numeric(obj@meta.data[ ,ColName.metadata])+1  
   print(obj@meta.data[ ,ColName.metadata])
   return(obj)
@@ -490,7 +490,7 @@ fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj=org) {
 
 
 # get Cells from metadata----
-mmeta <- function(ColName.metadata = 'batch', obj = org, as_numeric =F) {
+mmeta <- function(ColName.metadata = 'batch', obj = org, as_numeric =F) { # get a metadata column as a named vector
   x = as.named.vector(obj@meta.data[ ,ColName.metadata, drop=F])
   if (as_numeric) {
     as.numeric.wNames(x)+1
@@ -508,7 +508,7 @@ mmeta <- function(ColName.metadata = 'batch', obj = org, as_numeric =F) {
 # requires MarkdownReportsDev (github)
 # OutDir="~/"
 
-isave <- function(..., showMemObject=T){
+isave <- function(..., showMemObject=T){ # faster saving of workspace, and compression outside R, 
   path_rdata = paste0("~/Documents/Rdata.files/", basename(OutDir))
   dir.create(path_rdata)
   
