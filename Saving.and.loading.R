@@ -1,5 +1,5 @@
 # Saving and loading R objects: performance testing
-# Source: https://rpubs.com/jeffjjohnston/rds_compression
+# Modified from: https://rpubs.com/jeffjjohnston/rds_compression 
 
 
 # Wrapper layer 2 (top) -----------------------------------------------------------------------------------
@@ -47,7 +47,6 @@ sssRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org.ALL", "org")
   tictoc::toc()
 }
 
-
 # Wrapper layer 1 -----------------------------------------------------------------------------------
 ssaveRDS <- function(object, filename, con_func = list(pigz_pipe, snappy_pipe)[[1]], 
                      func_type = c("pipe", "builtin")[1], ...) {
@@ -73,7 +72,7 @@ rreadRDS <- function(filename, con_func = list(pigz_pipe, snappy_pipe)[[1]],
 
 # Pipes -----------------------------------------------------------------------------------
 
-snappy_pipe <- function(filename, mode="read") {
+snappy_pipe <- function(filename, mode="read") { # low compression rate, lightning fast
   if(mode == "read") {
     con <- pipe(paste0("cat ", filename, " | snzip -dc"), "rb")
   } else {
@@ -82,7 +81,8 @@ snappy_pipe <- function(filename, mode="read") {
   con
 }
 
-pigz_pipe <- function(filename, mode="read", cores=6) {
+
+pigz_pipe <- function(filename, mode="read", cores=6) { # normal gzip compression rate, ~*cores faster in zipping
   if(mode == "read") {
     con <- pipe(paste0("cat ", filename, " | pigz -dcp ", cores), "rb")
   } else {

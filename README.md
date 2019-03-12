@@ -22,6 +22,12 @@ Tested on OS X, but it is in development.
 
 ### 1.Parallel Implementation
 - FindAllMarkers.multicore
+- rrRDS: read a list of objects
+  - rreadRDS: optionally parallel decompression of saved object by pigz_pipe
+- sssRDS: save a list of objects
+  - ssaveRDS: parallel compression of saved objects by pigz_pipe
+    - snappy_pipe: fast single-core, loose compression
+    - pigz_pipe
 
 ### 2.Parallel templates with foreach
 - CreateSeuratObject
@@ -41,6 +47,7 @@ Tested on OS X, but it is in development.
 
 ### 5. Other functions implemented / collected here
 - multiFeaturePlot.A4
+  - multi-core implementation (of generating plots) did not work: it kept hanging at n*100% cpu use.
 - multiFeatureHeatmap.A4
 - LabelPoint
 - LabelUR
