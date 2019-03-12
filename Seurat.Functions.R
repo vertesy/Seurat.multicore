@@ -61,10 +61,10 @@ FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0
 
 # ------------------------------
 # check.genes ---------------------------------------
-check.genes <- function(list.of.genes = ClassicMarkers, object = org) { # check if genes exist in your dataset
-  missingGenes = setdiff(list.of.genes, rownames(object@data))
+check.genes <- function(list.of.genes = ClassicMarkers, obj = org) { # check if genes exist in your dataset
+  missingGenes = setdiff(list.of.genes, rownames(obj@data))
   if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
-  intersect(list.of.genes, rownames(object@data))
+  intersect(list.of.genes, rownames(obj@data))
 }
 
 
@@ -140,7 +140,7 @@ multiFeatureHeatmap.A4 <- function(list.of.genes, object = org, gene.per.page=5
                                    , gene.min.exp = 'q5', gene.max.exp = 'q95'
                                    , jpeg.res = 225, jpeg.q = 90) {
   
-  list.of.genes = check.genes(list.of.genes, object = scObj)
+  list.of.genes = check.genes(list.of.genes, obj = object)
   
   lsG = iterBy.over(1:l(list.of.genes), by=gene.per.page)
   for (i in 1:l(lsG)) { print(i )
@@ -519,3 +519,29 @@ isave <- function(..., showMemObject=T){ # faster saving of workspace, and compr
   system(paste("gzip", fname),  wait = FALSE) # execute in the background
 }
 
+
+
+if (F) {
+  
+  "Very slow for some reason"
+  # extended Seurat object
+  setClass(
+    "xseurat",
+    contains="seurat",
+    slots=c(p="list", 
+            all.genes = "list")
+  ) -> xseurat
+  # x <- as(org.discarded, "xseurat")
+
+  
+  extended.Seurat.class <- function(obj) {
+    as(obj, "xseurat")
+  }
+  
+  xz = extended.Seurat.class(org)
+  is(xz)
+  x@p = p
+  x@all.genes = all.genes
+  is(x)
+  
+} # if
