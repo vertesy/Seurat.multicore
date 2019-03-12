@@ -1,6 +1,6 @@
 # Seurat multicore
 
-Multicore and untility functions & implementations for Seurat using doMC / foreach packages.
+Multicore and utility functions & implementations for Seurat using doMC / foreach packages.
 Implementations are either from me or found on the web. 
 
 Tested on OS X, but it is in development.
