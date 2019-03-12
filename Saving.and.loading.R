@@ -2,6 +2,22 @@
 # Modified from: https://rpubs.com/jeffjjohnston/rds_compression 
 
 
+# Save workspace -----------------------------------------------
+# requires MarkdownReportsDev (github) and defining OutDir
+
+isave <- function(..., showMemObject=T){ # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+  path_rdata = paste0("~/Documents/Rdata.files/", basename(OutDir))
+  dir.create(path_rdata)
+  
+  if (showMemObject) { memory.biggest.objects() }
+  fname = MarkdownReportsDev::kollapse(path_rdata, "/",idate(),...,".Rdata")
+  save.image( file = fname, compress=F)
+  MarkdownReportsDev::iprint("Saved, being compressed", fname)
+  system(paste("gzip", fname),  wait = FALSE) # execute in the background
+}
+
+
+
 # Wrapper layer 2 (top) -----------------------------------------------------------------------------------
 
 # read / load multiple objects 

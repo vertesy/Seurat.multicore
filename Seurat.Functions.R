@@ -182,19 +182,6 @@ mmeta <- function(ColName.metadata = 'batch', obj = org, as_numeric =F) { # get 
 }
 
 
-# Save ------------------------
-# requires MarkdownReportsDev (github)
-
-isave <- function(..., showMemObject=T){ # faster saving of workspace, and compression outside R, 
-  path_rdata = paste0("~/Documents/Rdata.files/", basename(OutDir))
-  dir.create(path_rdata)
-  
-  if (showMemObject) { memory.biggest.objects() }
-  fname = MarkdownReportsDev::kollapse(path_rdata, "/",idate(),...,".Rdata")
-  save.image( file = fname, compress=F)
-  MarkdownReportsDev::iprint("Saved, being compressed", fname)
-  system(paste("gzip", fname),  wait = FALSE) # execute in the background
-}
 
 
 # Work in progress ------------------------------------------------------------
