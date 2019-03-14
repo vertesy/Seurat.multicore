@@ -49,6 +49,7 @@ rrRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org"), ...) { # l
 # save multiple objects using pigz by default
 sssRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org.ALL", "org"), ...) { # parallel save RDS
   tictoc::tic()
+  base_name <- character()
   path_rdata = paste0("~/Documents/Rdata.files/", basename(OutDir))
   dir.create(path_rdata)
   for (obj in list_of_objectnames) {
@@ -56,10 +57,12 @@ sssRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org.ALL", "org")
     if ( "seurat" %in% is(obj)) { 
       obj@misc$p = p 
       obj@misc$all.genes = all.genes
-      }
-    fname = MarkdownReportsDev::kollapse(path_rdata , "/", obj,'.', idate(),".Rds")
+    }
+    base_name[i] = paste0(obj, '.', idate(),".Rds", collapse = "")
+    fname = paste0(path_rdata , "/", base_name[i], collapse = "")
     ssaveRDS( object = get(obj), filename = fname, ...)
   }
+  dput(base_name)
   tictoc::toc()
 }
 
