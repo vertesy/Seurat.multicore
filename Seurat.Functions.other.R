@@ -2,13 +2,15 @@
 ## Seurat.Functions.other.R
 # ------------------------------------------------------------------------------------------
 # Source: self + web
-# source("/Users/abel.vertesy/GitHub/Seurat.multicore/Seurat.Functions.other.R")
-
-
+# source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R")
 
 
 # FeaturePlot with different defaults ------------------------------------------------------------------
-aFeaturePlot <- function (object, features.plot, min.cutoff = 'q1', max.cutoff = 'q99', 
+GetMostVarGenes <- function(obj=org, nGenes = p$nVarGenes) head(rownames(slot(object = obj, name = "hvg.info")), n = nGenes)
+
+
+# FeaturePlot with different defaults ------------------------------------------------------------------
+aFeaturePlot <- function (object=org, features.plot, min.cutoff = 'q1', max.cutoff = 'q99', 
                           dim.1 = 1, dim.2 = 2, cells.use = NULL, pt.size = 1
                           , cols.use = c("yellow", "red"), pch.use = 16, overlay = FALSE, do.hover = FALSE, 
                           data.hover = "ident", do.identify = FALSE, reduction.use = "umap", 

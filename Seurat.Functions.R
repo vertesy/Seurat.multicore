@@ -5,7 +5,7 @@
 
 require(Seurat)
 require(doMC)
-source("/Users/abel.vertesy/GitHub/Seurat.multicore/Seurat.Functions.other.R")
+source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R")
 
 
 # ### Functions
@@ -42,17 +42,23 @@ read10x <- function(dir) {
 
 # FindAllMarkers.multicore ------------------------------
 
-FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0.5, only_pos=F ){
+
+FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0.5, only_pos=F, wait=10,resolution='res.0.5' ){
   tictoc::tic()
-  nrClusters=length(unique(obj@meta.data$'ident'))
+  nrClusters=length(unique(obj@meta.data[,resolution]))
   N=nrClusters-1
   
-  ls.DE <- foreach(i=0:N) %dopar% {
-    FindMarkers(obj,ident.1=N, only.pos = only_pos, min.pct=min_pct, logfc.threshold = logfc_threshold)
+  nCores =6
+  j=seq(from = 0, by = wait, length.out = nCores)
+  j=rep(j,nrClusters)
+  ls.DE.res.05 <- foreach(i=0:N) %dopar% {
+    Sys.sleep(j[i+1])
+    FindMarkers(obj, ident.1=i, only.pos = only_pos, min.pct=min_pct, logfc.threshold = logfc_threshold)
   }; 
   tictoc::toc()
-  return(ls.DE)
+  return(ls.DE.res.05)
 }
+
 
 # FindAllMarkers.multicore2 ------------------------------
 # https://github.com/satijalab/seurat/issues/457
@@ -70,8 +76,6 @@ check.genes <- function(list.of.genes = ClassicMarkers, obj = org) { # check if 
   if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
   intersect(list.of.genes, rownames(obj@data))
 }
-
-
 
 
 # Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
@@ -97,6 +101,36 @@ multiFeaturePlot.A4 <- function(list.of.genes, object = org, plot.reduction='uma
   }
   tictoc::toc()
 }; 
+
+# Save multiple FeatureHeatmaps from a list of genes on A4 jpeg -----------------------
+# code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
+
+multiFeatureHeatmap.A4 <- function(list.of.genes, object = org, gene.per.page=5
+                                   , group.cells.by= "batch", plot.reduction='umap'
+                                   , cex = iround(3/gene.per.page), sep_scale = F
+                                   , gene.min.exp = 'q5', gene.max.exp = 'q95'
+                                   , jpeg.res = 225, jpeg.q = 90) {
+  
+  tictoc::tic()
+  list.of.genes = check.genes(list.of.genes, obj = object)
+  
+  lsG = iterBy.over(1:l(list.of.genes), by=gene.per.page)
+  for (i in 1:l(lsG)) { print(i )
+    genes = list.of.genes[lsG[[i]]]
+    plotname = kpp(c("FeatureHeatmap",plot.reduction,i, genes, 'jpg' ))
+    print(plotname)
+    jjpegA4(plotname, r = jpeg.res, q = jpeg.q)
+    try(
+      FeatureHeatmap(object, features.plot =genes , group.by = group.cells.by 
+                     , reduction.use = plot.reduction, do.return = F
+                     , sep.scale = sep_scale, min.exp = gene.min.exp, max.exp = gene.max.exp
+                     , pt.size = cex, key.position = "top")
+      , silent = F
+    )
+    try.dev.off()
+  }
+  tictoc::toc()
+}
 
 
 # plot.UMAP.tSNE.sidebyside ---------------------------------------------------------------------
@@ -131,37 +165,7 @@ plot.UMAP.tSNE.sidebyside <- function(object = org, grouping = 'res.0.6',
                      , base_height = heigth
                      # each individual subplot should have an aspect ratio of 1.3
                      # , base_aspect_ratio = 1.5
-                     )
-}
-
-# Save multiple FeatureHeatmaps from a list of genes on A4 jpeg -----------------------
-# code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
-
-multiFeatureHeatmap.A4 <- function(list.of.genes, object = org, gene.per.page=5
-                                   , group.cells.by= "batch", plot.reduction='umap'
-                                   , cex = iround(3/gene.per.page), sep_scale = F
-                                   , gene.min.exp = 'q5', gene.max.exp = 'q95'
-                                   , jpeg.res = 225, jpeg.q = 90) {
-  
-  tictoc::tic()
-  list.of.genes = check.genes(list.of.genes, obj = object)
-  
-  lsG = iterBy.over(1:l(list.of.genes), by=gene.per.page)
-  for (i in 1:l(lsG)) { print(i )
-    genes = list.of.genes[lsG[[i]]]
-    plotname = kpp(c("FeatureHeatmap",plot.reduction,i, genes, 'jpg' ))
-    print(plotname)
-    jjpegA4(plotname, r = jpeg.res, q = jpeg.q)
-    try(
-      FeatureHeatmap(object, features.plot =genes , group.by = group.cells.by 
-                     , reduction.use = plot.reduction, do.return = F
-                     , sep.scale = sep_scale, min.exp = gene.min.exp, max.exp = gene.max.exp
-                     , pt.size = cex, key.position = "top")
-      , silent = F
-    )
-    try.dev.off()
-  }
-  tictoc::toc()
+  )
 }
 
 
@@ -173,7 +177,7 @@ fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj=org) { # fi
 }
 
 
-# get Cells from metadata----
+# get Cells from metadata  ------------------------------------------------
 mmeta <- function(ColName.metadata = 'batch', obj = org, as_numeric =F) { # get a metadata column as a named vector
   x = as.named.vector(obj@meta.data[ ,ColName.metadata, drop=F])
   if (as_numeric) {
