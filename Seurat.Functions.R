@@ -6,6 +6,8 @@
 require(Seurat)
 require(doMC)
 source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R")
+source("~/GitHub/Seurat.multicore/Saving.and.loading.R")
+
 
 
 # ### Functions
@@ -42,21 +44,19 @@ read10x <- function(dir) {
 
 # FindAllMarkers.multicore ------------------------------
 
-
-FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0.5, only_pos=F, wait=10,resolution='res.0.5' ){
+FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0.5, only_pos=F, wait=10,resolution='res.0.5', nCores =6 ){
   tictoc::tic()
   nrClusters=length(unique(obj@meta.data[,resolution]))
   N=nrClusters-1
-  
-  nCores =6
+
   j=seq(from = 0, by = wait, length.out = nCores)
   j=rep(j,nrClusters)
-  ls.DE.res.05 <- foreach(i=0:N) %dopar% {
+  ls.DE <- foreach(i=0:N) %dopar% {
     Sys.sleep(j[i+1])
     FindMarkers(obj, ident.1=i, only.pos = only_pos, min.pct=min_pct, logfc.threshold = logfc_threshold)
-  }; 
+  };  
   tictoc::toc()
-  return(ls.DE.res.05)
+  return(ls.DE)
 }
 
 
@@ -144,6 +144,7 @@ plot.UMAP.tSNE.sidebyside <- function(object = org, grouping = 'res.0.6',
                                       cells_use = NULL,
                                       no_axes = T,
                                       pt_size = 0.5, 
+                                      name.suffix = NULL,
                                       width = hA4, heigth = 1.75*wA4, filetype = "pdf") { # plot a UMAP and tSNE sidebyside
   
   p1 <- DimPlot(object = object, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
@@ -157,7 +158,8 @@ plot.UMAP.tSNE.sidebyside <- function(object = org, grouping = 'res.0.6',
     ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
   
   plots = plot_grid(p1, p2, labels=c("A", "B"), ncol = 2)
-  plotname=kpp( 'UMAP.tSNE', grouping, filetype)
+  plotname=kpp( 'UMAP.tSNE', grouping, name.suffix, filetype)
+  
   cowplot::save_plot(filename = plotname, plot = plots 
                      , ncol = 2 # we're saving a grid plot of 2 columns
                      , nrow = 1 # and 2 rows
@@ -184,6 +186,14 @@ mmeta <- function(ColName.metadata = 'batch', obj = org, as_numeric =F) { # get 
     as.numeric.wNames(x)+1
   } else {x}
 }
+
+# GetCellIDs from metadata ---------------
+GetCellIDs.from.meta <- function(obj=org, ColName.meta = 'res.0.6', values = 1) {
+  idx.matching.cells = which(obj@meta.data[ , ColName.meta] %in% values)
+  iprint(l(idx.matching.cells), 'cells found.')
+  return(rownames(obj@meta.data)[idx.matching.cells])
+}
+# GetCellIDs.from.meta()
 
 
 
