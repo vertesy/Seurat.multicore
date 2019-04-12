@@ -4,6 +4,8 @@
 
 # Save workspace -----------------------------------------------
 # requires MarkdownReportsDev (github) and defining OutDir
+# requires github/vertesy/CodeAndRoll.r 
+
 
 isave <- function(..., showMemObject=T){ # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
   path_rdata = paste0("~/Documents/Rdata.files/", basename(OutDir))
@@ -24,6 +26,8 @@ isave <- function(..., showMemObject=T){ # faster saving of workspace, and compr
 rrRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org"), ...) { # load a list of RDS files with parallel unzip pgzip
   tictoc::tic()
   path_rdata = paste0("~/Documents/Rdata.files/", basename(OutDir))
+  iprint("Looking for files under:" , path_rdata)
+  iprint("(Base on OutDir)")
   dir.exists(path_rdata)
   # lsX <- foreach(obj = list_of_objectnames) %dopar% {
   for (obj in list_of_objectnames) {
@@ -47,10 +51,12 @@ rrRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org"), ...) { # l
 
 
 # save multiple objects using pigz by default
-sssRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org.ALL", "org"), ...) { # parallel save RDS
+sssRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org.ALL", "org"), name.suffix =NULL, ...) { # parallel save RDS
   tictoc::tic()
   base_name <- character()
   path_rdata = paste0("~/Documents/Rdata.files/", basename(OutDir))
+  iprint("Files saved under:" , path_rdata)
+  
   dir.create(path_rdata)
   for (obj in list_of_objectnames) {
     print(obj)
@@ -58,7 +64,7 @@ sssRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org.ALL", "org")
       obj@misc$p = p 
       obj@misc$all.genes = all.genes
     }
-    base_name[i] = paste0(obj, '.', idate(),".Rds", collapse = "")
+    base_name[i] = paste0(obj, '.', name.suffix, '.', idate(),".Rds", collapse = "")
     fname = paste0(path_rdata , "/", base_name[i], collapse = "")
     ssaveRDS( object = get(obj), filename = fname, ...)
   }
