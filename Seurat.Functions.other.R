@@ -9,6 +9,11 @@
 GetMostVarGenes <- function(obj=org, nGenes = p$nVarGenes) head(rownames(slot(object = obj, name = "hvg.info")), n = nGenes)
 
 
+# quick umap ---------------
+umap <- function(gene='DLX5', obj =org, pt_size =1) {
+  FeaturePlot(object = obj, features.plot = gene, reduction.use = 'umap', pt.size = pt_size)
+}
+
 # FeaturePlot with different defaults ------------------------------------------------------------------
 aFeaturePlot <- function (object=org, features.plot, min.cutoff = 'q1', max.cutoff = 'q99', 
                           dim.1 = 1, dim.2 = 2, cells.use = NULL, pt.size = 1
