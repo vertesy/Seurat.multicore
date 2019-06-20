@@ -6,7 +6,7 @@ Implementations are either from me or found on the web.
 ## Use case
 Some Seurat functions can be fairly slow when run on a single core. To speed up you can use all cores of your computer.
 
-- Seurat 2.x has very limited multicore functionality  ScaleData, Jackstraw. 
+- Seurat 2.x has very limited multicore functionality (ScaleData, Jackstraw). 
 - Seurat 3.0 has [implemented multiple functions](https://satijalab.org/seurat/v3.0/future_vignette.html) using _future_.
 - These `foreach` based parallel implementations/templates are mostly complementary to these
 
