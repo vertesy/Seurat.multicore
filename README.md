@@ -41,7 +41,7 @@ Tested on OS X, but it is in development.
 - saveRDS
 - readRDS
 - METADATA
-- FilterCells
+- FilterCells; subset (in v3)
 - NormalizeData
 
 ### 3. Parallel Implementation by Seurat
