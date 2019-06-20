@@ -2,7 +2,14 @@
 ## Seurat.Functions.R
 # ------------------------------------------------------------------------------------------
 # Source: self + web
-# for Seurat v2.X
+
+# NOTE:
+# Seurat v3 uses the 'future' framework for parallelization.
+# https://satijalab.org/seurat/v3.0/future_vignette.html
+
+# These provide an alternative way, advantages/disadvantages are untested.
+
+
 
 require(Seurat)
 require(doMC)

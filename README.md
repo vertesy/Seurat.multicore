@@ -1,6 +1,6 @@
-# Seurat multicore
+# Seurat v2 multicore 
 
-Multicore and utility functions & implementations for Seurat using doMC / foreach packages.
+Multicore and utility functions & implementations for **Seurat v2.X** using doMC / foreach packages.
 Implementations are either from me or found on the web. 
 
 Tested on OS X, but it is in development.
