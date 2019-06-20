@@ -1,18 +1,23 @@
-# Seurat v2 multicore 
+# Multicore functions and parallel computing implementations for Seurat 2 & 3
 
-Multicore and utility functions & implementations for **Seurat v2.X** using doMC / foreach packages.
+Multicore and utility functions & implementations for Seurat using doMC / foreach packages.
 Implementations are either from me or found on the web. 
 
+## Use case
+- Seurat 2.x has very limited multicore functionality  ScaleData, Jackstraw. 
+- Seurat 3.0 has [implemented multiple functions](https://satijalab.org/seurat/v3.0/future_vignette.html) using _future_.
+- These `foreach` based parallel implementations/templates are mostly complementary to these
+
 Tested on OS X, but it is in development.
-
-
 
 ## Content
 
 1. **Seurat.Functions.R**: 
    1. Multi-core / parallelized calculations
    2. Multiplexed plotting / graphics functions without parallelization
-2. **Seurat.Multicore.Examples.R**
+2. **Seurat3.Functions.R**
+   1. Single-core functions wrapped in multi-core / parallelized foreach loops
+3. **Seurat.Multicore.Examples.R**
    1. Single-core functions wrapped in multi-core / parallelized foreach loops
 
 
