@@ -52,7 +52,7 @@ read10x <- function(dir) {
 
 # FindAllMarkers.multicore ------------------------------
 
-FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0.5, only_pos=F, wait=10,resolution='res.0.5', nCores =6 ){
+FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0.5, only_pos=F, wait=10, resolution='RNA_snn_res.0.5', nCores =6 ){
   tictoc::tic()
   nrClusters=length(unique(obj@meta.data[,resolution]))
   N=nrClusters-1
@@ -61,7 +61,7 @@ FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0
   j=rep(j,nrClusters)
   ls.DE <- foreach(i=0:N) %dopar% {
     Sys.sleep(j[i+1])
-    FindMarkers(obj, ident.1=i, only.pos = only_pos, min.pct=min_pct, logfc.threshold = logfc_threshold)
+    FindMarkers(object = obj, ident.1=i, only.pos = only_pos, min.pct=min_pct, logfc.threshold = logfc_threshold)
   };  
   tictoc::toc()
   return(ls.DE)
@@ -80,9 +80,9 @@ FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0
 # ------------------------------
 # check.genes ---------------------------------------
 check.genes <- function(list.of.genes = ClassicMarkers, obj = org) { # check if genes exist in your dataset
-  missingGenes = setdiff(list.of.genes, rownames(obj@data))
+  missingGenes = setdiff(list.of.genes, rownames(obj))
   if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
-  intersect(list.of.genes, rownames(obj@data))
+  intersect(list.of.genes, rownames(obj))
 }
 
 
