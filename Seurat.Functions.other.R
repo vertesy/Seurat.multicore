@@ -231,30 +231,47 @@ LabelBL <- function(plot, genes, exp.mat, adj.u.t = 0.1, adj.l.t = 0.15, adj.u.s
 
 # Work in progress ------------------------------------------------------------
 
-# ------------------------------------------------------------
-# if (F) {
-#   p$'resolutions' = c(0.3, 0.6, 0.9)
-#   p$'num.ccs' = 15
-#   
-#   FindClusters.multicore <- function(obj = org, res = p$'resolutions' ){
-#     
-#     ls.Clustering <- foreach(i=0:N) %dopar% {
-#       FindClusters(obj, reduction.type = "cca.aligned" 
-#                    , resolution = res , dims.use = 1:p$'num.ccs'
-#                    , plot.SNN = T, print.output = F)
-#     }; 
-#     # extract data
-#     clusterings <- seurat@data.info %>% select(contains("res."))
-#     head(clusterings)
-#     return(ls.Clustering)
-#   }
-# }
+PlotFilters <- function(Obj = ls.Seurat[[i]], suffix = "org1", filetype='png' ) {
+  p1 = FeatureScatter(object = Obj, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + 
+    geom_point(size=0.25, aes(colour = 
+                     nFeature_RNA > p$'thr.hp.nFeature_RNA' & 
+                     nFeature_RNA < p$'thr.lp.nFeature_RNA' )) +  
+    geom_hline(yintercept = c(p$thr.lp.nFeature_RNA, p$'thr.hp.nFeature_RNA')
+               , linetype = "dashed", color = "black") 
 
-# ------------------------------------------------------------
-# mmeta.add <- function(ColName.metadata = 'res.0.6', newdata.vec=rep(1, nrow(obj@meta.data) ), obj = org, as_numeric =F) {
-#   stopifnot(length(newdata.vec) =  nrow(obj@meta.data))
-#   obj@meta.data[ ,ColName.metadata] <- newdata.vec
-#   }
+  p2 = FeatureScatter(object = Obj, feature1 = "nFeature_RNA", feature2 = "percent.ribo") + 
+    geom_point(size=0.25, aes(colour = 
+                     nFeature_RNA > p$'thr.hp.nFeature_RNA' & 
+                     nFeature_RNA < p$'thr.lp.nFeature_RNA' & 
+                     percent.ribo < p$'thr.lp.ribo' )) + 
+    geom_vline(xintercept = c(p$'thr.lp.nFeature_RNA', p$'thr.hp.nFeature_RNA')
+               , linetype = "dashed", color = "black") +
+    geom_hline(yintercept = p$'thr.lp.ribo'
+               , linetype = "dashed", color = "black")
+  
+  p3 = FeatureScatter(object = Obj, feature1 = "nFeature_RNA", feature2 = "percent.mito") + 
+    geom_point(size=0.25, aes(colour = 
+                     nFeature_RNA > p$'thr.hp.nFeature_RNA' & 
+                     nFeature_RNA < p$'thr.lp.nFeature_RNA' & 
+                     percent.mito < p$'thr.lp.mito' )) + 
+    geom_vline(xintercept = c(p$'thr.lp.nFeature_RNA', p$'thr.hp.nFeature_RNA')
+               , linetype = "dashed", color = "black") +
+    geom_hline(yintercept = p$'thr.lp.mito'
+               , linetype = "dashed", color = "black")
+  
+  p4 = FeatureScatter(object = Obj, feature1 = "percent.ribo", feature2 = "percent.mito") + 
+    geom_point(size=0.25, aes(colour = 
+                     percent.ribo < p$'thr.lp.ribo' & 
+                     percent.mito < p$'thr.lp.mito' )) + 
+    geom_vline(xintercept = p$'thr.lp.ribo'
+               , linetype = "dashed", color = "black") +
+    geom_hline(yintercept = p$'thr.lp.mito'
+               , linetype = "dashed", color = "black")
+  
+  pg = plot_grid(p1,p2,p3,p4, nrow = 2)
+  ggsave(filename = ppp('Filters', suffix, filetype))
+}
+
 
 
 # ------------------------------------------------------------
