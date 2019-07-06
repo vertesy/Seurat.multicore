@@ -10,7 +10,6 @@
 # These provide an alternative way, advantages/disadvantages are untested.
 
 
-
 require(Seurat)
 require(doMC)
 source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R")
@@ -87,40 +86,56 @@ check.genes <- function(list.of.genes = ClassicMarkers, obj = org) { # check if 
 
 
 # Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
-multiFeaturePlot.A4 <- function(list.of.genes, object = org, plot.reduction='umap'
-                                , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = ceiling(10/(nr.Col*nr.Row))
-                                , gene.min.exp = 'q01', gene.max.exp = 'q99'
+multiFeaturePlot.A4 <- function(list.of.genes, obj = org, plot.reduction='umap'
+                                , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
+                                , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
                                 , jpeg.res = 225, jpeg.q = 90) {
   tictoc::tic()
-  list.of.genes = check.genes(list.of.genes, obj = object)
+  ParentDir = OutDir
+  if (subdir) create_set_SubDir(... = p0(substitute(list.of.genes),'.', plot.reduction),'/')
+  
+  list.of.genes = check.genes(list.of.genes = list.of.genes, obj = obj)
   lsG = iterBy.over(1:l(list.of.genes), by=nr.Row*nr.Col)
   for (i in 1:l(lsG)) { print(i )
     genes = list.of.genes[lsG[[i]]]
     plotname = kpp(c(plot.reduction,i, genes, 'jpg' ))
     
-    jjpegA4(plotname, r = jpeg.res, q = jpeg.q)
-    # try(
-    FeaturePlot(object, features.plot =genes, reduction.use = plot.reduction
-                , nCol = nr.Col, cols.use = colors, no.axes = T, no.legend = F, vector.friendly = T
-                , min.cutoff = gene.min.exp, max.cutoff = gene.max.exp, do.return = F
-                , pt.size = cex)
-    # , silent = F    )
-    try.dev.off()
+    plot.list = FeaturePlot(object = obj, features =genes, reduction = plot.reduction, combine = F
+                            , ncol = nr.Col, cols = colors 
+                            , min.cutoff = gene.min.exp, max.cutoff = gene.max.exp
+                            , pt.size = cex)
+    
+    for(i in 1:length(plot.list)) {
+      plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
+    }
+    
+    ggsave(filename = plotname, width = wA4, height = hA4, 
+           plot = cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
+    )
   }
+  
+  if (subdir) create_set_OutDir(... = ParentDir)
   tictoc::toc()
 }; 
+
+
+
+
+
+
+
 
 # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg -----------------------
 # code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
 
-multiFeatureHeatmap.A4 <- function(list.of.genes, object = org, gene.per.page=5
+multiFeatureHeatmap.A4 <- function(list.of.genes, obj = org, gene.per.page=5
                                    , group.cells.by= "batch", plot.reduction='umap'
                                    , cex = iround(3/gene.per.page), sep_scale = F
                                    , gene.min.exp = 'q5', gene.max.exp = 'q95'
                                    , jpeg.res = 225, jpeg.q = 90) {
   
   tictoc::tic()
-  list.of.genes = check.genes(list.of.genes, obj = object)
+  list.of.genes = check.genes(list.of.genes, obj = obj)
   
   lsG = iterBy.over(1:l(list.of.genes), by=gene.per.page)
   for (i in 1:l(lsG)) { print(i )
@@ -129,7 +144,7 @@ multiFeatureHeatmap.A4 <- function(list.of.genes, object = org, gene.per.page=5
     print(plotname)
     jjpegA4(plotname, r = jpeg.res, q = jpeg.q)
     try(
-      FeatureHeatmap(object, features.plot =genes , group.by = group.cells.by 
+      FeatureHeatmap(obj, features.plot =genes , group.by = group.cells.by 
                      , reduction.use = plot.reduction, do.return = F
                      , sep.scale = sep_scale, min.exp = gene.min.exp, max.exp = gene.max.exp
                      , pt.size = cex, key.position = "top")
@@ -143,7 +158,7 @@ multiFeatureHeatmap.A4 <- function(list.of.genes, object = org, gene.per.page=5
 
 # plot.UMAP.tSNE.sidebyside ---------------------------------------------------------------------
 
-plot.UMAP.tSNE.sidebyside <- function(object = org, grouping = 'res.0.6',
+plot.UMAP.tSNE.sidebyside <- function(obj = org, grouping = 'res.0.6',
                                       no_legend = F,
                                       do_return = TRUE,
                                       do_label = T,
@@ -155,12 +170,12 @@ plot.UMAP.tSNE.sidebyside <- function(object = org, grouping = 'res.0.6',
                                       name.suffix = NULL,
                                       width = hA4, heigth = 1.75*wA4, filetype = "pdf") { # plot a UMAP and tSNE sidebyside
   
-  p1 <- DimPlot(object = object, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
+  p1 <- DimPlot(object = obj, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
                 , no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size
                 , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size) + 
     ggtitle("tSNE") + theme(plot.title = element_text(hjust = 0.5))
   
-  p2 <- DimPlot(object = object, reduction.use = "umap", no.axes = no_axes, cells.use = cells_use
+  p2 <- DimPlot(object = obj, reduction.use = "umap", no.axes = no_axes, cells.use = cells_use
                 , no.legend = T, do.return = do_return, do.label = do_label, label.size = label_size
                 , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size) + 
     ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
