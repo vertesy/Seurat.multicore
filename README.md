@@ -3,14 +3,35 @@
 Multicore and utility functions & implementations for Seurat using doMC / foreach packages.
 Implementations are either from me or found on the web. 
 
+
+
 ## Use case
+
 Some Seurat functions can be fairly slow when run on a single core. To speed up you can use all cores of your computer.
 
 - Seurat 2.x has very limited multicore functionality (ScaleData, Jackstraw). 
 - Seurat 3.0 has [implemented multiple functions](https://satijalab.org/seurat/v3.0/future_vignette.html) using _future_.
-- These `foreach` based parallel implementations/templates are mostly complementary to these
+- Functions here use a `foreach` based parallel implementations/templates are mostly complementary to the implemented to Seurat's implementation 
 
 Tested on OS X, but it is in development.
+
+
+
+## Notice
+
+'Future' and 'doMC (foreach)' based parallelisation seem to collide in one case. If you load futures before, using  `NormalizeData` inside a foreach loop, it fails (Error writing to connection).
+
+Solution: do not load  & setup `future` before `NormalizeData`.
+
+```
+# After NormalizeData
+library(future)
+plan("multiprocess", workers = 6)
+# So to set Max mem size to 2GB, you would run :
+options(future.globals.maxSize = 4000 * 1024^2) 
+```
+
+
 
 ## Content
 
