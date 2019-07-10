@@ -11,8 +11,13 @@
 
 try(require(Seurat), silent = F)
 try(require(doMC), silent = F)
+<<<<<<< HEAD
 try(source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R"), silent = T)
 try(source("~/GitHub/Seurat.multicore/Saving.and.loading.R"), silent = T)
+=======
+try(source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R"), silent = F)
+try(source("~/GitHub/Seurat.multicore/Saving.and.loading.R"), silent = F)
+>>>>>>> 3ad53c3a873326222dd03c7b7f3c065bdd2c4036
 
 
 
