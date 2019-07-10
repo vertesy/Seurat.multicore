@@ -9,11 +9,10 @@
 
 # These provide an alternative way, advantages/disadvantages are untested.
 
-
-require(Seurat)
-require(doMC)
-source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R")
-source("~/GitHub/Seurat.multicore/Saving.and.loading.R")
+try(require(Seurat), silent = F)
+try(require(doMC), silent = F)
+try(source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R"), silent = T)
+try(source("~/GitHub/Seurat.multicore/Saving.and.loading.R"), silent = T)
 
 
 
