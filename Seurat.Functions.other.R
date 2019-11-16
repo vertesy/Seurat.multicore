@@ -303,6 +303,44 @@ if (F) {
 
 # ------------------------------------------------------------
 
+check.genes <- function(list.of.genes = ClassicMarkers, obj = seu3) { # check if genes exist in your dataset
+  missingGenes = setdiff(list.of.genes, rownames(obj))
+  if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
+  intersect(list.of.genes, rownames(obj))
+}
+
+
+# ------------------------------------------------------------
+"Check gene symbol naming convention"
+
+gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) {
+  rn = rownames(GetAssayData(object = Seu.obj, slot = "counts"))
+  llprint("### Gene name pattern")
+  
+  llogit('`rn = rownames(GetAssayData(object = ls.Seurat[[1]], slot = "counts"))`')
+  llogit('`head(grepv(rn, pattern = "-"), 10)`')
+  print('pattern = -')
+  llprint(head(grepv(rn, pattern = "-"), 10))
+  
+  llogit('`head(grepv(rn, pattern = "_"), 10)`')
+  print('pattern = _')
+  llprint(head(grepv(rn, pattern = "_"), 10))
+  
+  llogit('`head(grepv(rn, pattern = "\\."), 10)`')
+  print('pattern = \\.')
+  llprint(head(grepv(rn, pattern = "\\."), 10))
+  
+  llogit('`head(grepv(rn, pattern = "\\.AS[1-9]"), 10)`')
+  print('pattern = \\.AS[1-9]')
+  llprint(head(grepv(rn, pattern = "\\.AS[1-9]"), 10))
+}
+
+# ------------------------------------------------------------
+
+# ------------------------------------------------------------
+
+# ------------------------------------------------------------
+
 # ------------------------------------------------------------
 
 

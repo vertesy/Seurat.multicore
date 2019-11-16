@@ -14,6 +14,7 @@ try(require(doMC), silent = F)
 
 try(source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R"), silent = T)
 try(source("~/GitHub/Seurat.multicore/Saving.and.loading.R"), silent = T)
+try(source("~/GitHub/Seurat.multicore/Seurat3.Write.Out.CBCs.for.subset-bam.R"), silent = T)
 
 
 # ### Functions
@@ -82,6 +83,30 @@ check.genes <- function(list.of.genes = ClassicMarkers, obj = org) { # check if 
   if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
   intersect(list.of.genes, rownames(obj))
 }
+
+# gene.name.check for read .mtx /write .rds script ---------------------------------------
+gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) {
+  rn = rownames(GetAssayData(object = Seu.obj, slot = "counts"))
+  llprint("### Gene name pattern")
+  
+  llogit('`rn = rownames(GetAssayData(object = ls.Seurat[[1]], slot = "counts"))`')
+  llogit('`head(grepv(rn, pattern = "-"), 10)`')
+  print('pattern = -')
+  llprint(head(grepv(rn, pattern = "-"), 10))
+  
+  llogit('`head(grepv(rn, pattern = "_"), 10)`')
+  print('pattern = _')
+  llprint(head(grepv(rn, pattern = "_"), 10))
+  
+  llogit('`head(grepv(rn, pattern = "\\."), 10)`')
+  print('pattern = \\.')
+  llprint(head(grepv(rn, pattern = "\\."), 10))
+  
+  llogit('`head(grepv(rn, pattern = "\\.AS[1-9]"), 10)`')
+  print('pattern = \\.AS[1-9]')
+  llprint(head(grepv(rn, pattern = "\\.AS[1-9]"), 10))
+}
+
 
 
 # Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
@@ -210,7 +235,11 @@ mmeta <- function(ColName.metadata = 'batch', obj = org, as_numeric =F) { # get 
 }
 
 # GetCellIDs from metadata ---------------
-GetCellIDs.from.meta <- function(obj=org, ColName.meta = 'res.0.6', values = 1) {
+GetCellIDs.from.meta <- function(obj=org, ColName.meta = 'res.0.6', values = NA) {
+  if (is.na(values)) {
+    
+  }
+  
   idx.matching.cells = which(obj@meta.data[ , ColName.meta] %in% values)
   iprint(l(idx.matching.cells), 'cells found.')
   return(rownames(obj@meta.data)[idx.matching.cells])
@@ -221,3 +250,11 @@ GetCellIDs.from.meta <- function(obj=org, ColName.meta = 'res.0.6', values = 1) 
 
 
 # Work in progress ------------------------------------------------------------
+
+check.genes <- function(list.of.genes = ClassicMarkers, obj = seu3) { # check if genes exist in your dataset
+  missingGenes = setdiff(list.of.genes, rownames(obj))
+  if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
+  intersect(list.of.genes, rownames(obj))
+}
+
+
