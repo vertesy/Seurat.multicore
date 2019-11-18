@@ -53,7 +53,7 @@ write.out.CBCs.per.cl <- function(ls_CBCs = ls.of.CBCs, add.suffix="-1",
     for (j in 1:l(inside.ls)) {
       CBCs = inside.ls[[j]]
       if (!isFALSE(add.suffix)) CBCs = p0(CBCs,add.suffix)
-      write.simple.vec(input_vec =  CBCs, ManualName =  p0(outputDir,"/Cl.", j, ".csv"))
+      write.simple.vec(input_vec =  CBCs, ManualName =  p0(outputDir,"/Cl.", (j-1), ".csv"))
     }
   }
   if (writeMeta) {
