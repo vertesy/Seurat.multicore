@@ -77,12 +77,6 @@ FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0
 # Markers <- bplapply(0:N, FindMarker.wrapper,BPPARAM=MulticoreParam(3))
 
 # ------------------------------
-# check.genes ---------------------------------------
-check.genes <- function(list.of.genes = ClassicMarkers, obj = org) { # check if genes exist in your dataset
-  missingGenes = setdiff(list.of.genes, rownames(obj))
-  if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
-  intersect(list.of.genes, rownames(obj))
-}
 
 # gene.name.check for read .mtx /write .rds script ---------------------------------------
 gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) {
@@ -108,10 +102,17 @@ gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) {
 }
 
 
+# check.genes ---------------------------------------
+check.genes <- function(list.of.genes = ClassicMarkers, obj = combined.obj, assay.slot=c('RNA', 'integrated')[1]) { # check if genes exist in your dataset
+  all_genes = rownames(GetAssayData(object = obj, assay = assay.slot, slot = "data")); l(all_genes)
+  missingGenes = setdiff(list.of.genes, all_genes)
+  if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
+  intersect(list.of.genes, all_genes)
+}
 
 
 # Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
-multiFeaturePlot.A4 <- function(list.of.genes, obj = org, plot.reduction='umap'
+multiFeaturePlot.A4 <- function(list.of.genes, obj = org, plot.reduction='umap', intersectionAssay = c('RNA', 'integrated')[1]
                                 , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
                                 , jpeg.res = 225, jpeg.q = 90) {
@@ -119,10 +120,11 @@ multiFeaturePlot.A4 <- function(list.of.genes, obj = org, plot.reduction='umap'
   ParentDir = OutDir
   if (subdir) create_set_SubDir(... = p0(substitute(list.of.genes),'.', plot.reduction),'/')
   
-  list.of.genes = check.genes(list.of.genes = list.of.genes, obj = obj)
+  list.of.genes = check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay)
   lsG = iterBy.over(1:l(list.of.genes), by=nr.Row*nr.Col)
-  for (i in 1:l(lsG)) { print(i )
+  for (i in 1:l(lsG)) { 
     genes = list.of.genes[lsG[[i]]]
+    iprint(i,genes )
     plotname = kpp(c(plot.reduction,i, genes, 'jpg' ))
     
     plot.list = FeaturePlot(object = obj, features =genes, reduction = plot.reduction, combine = F
@@ -254,6 +256,30 @@ getCellIDs.from.meta <- function(obj=org, ColName.meta = 'res.0.6', values = NA)
 }
 # getCellIDs.from.meta()
 
+# PCA percent of variation associated with each PC ---------------
+seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of variation associated with each PC
+  pct <- obj@reductions$pca@stdev / sum(obj@reductions$pca@stdev) * 100
+  names(pct) =1:length(obj@reductions$pca@stdev)
+  return(pct)
+}
+
+
+# plot percent of variation associated with each PC ---------------
+seu.plot.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of variation associated with each PC
+  pct <- seu.PC.var.explained(obj)
+  wbarplot(pct, ylab= "% of variation explained" , xlab="Principal Components")
+  barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex=.5)
+}
+
+
+# seu.add.parameter.list.2.seurat.object ---------------
+qUMAP <- function(f= 'TOP2A', obj =  combined.obj, splitby = NULL, qlow = "q10", qhigh = "q90") { 
+  FeaturePlot(combined.obj, reduction = 'umap'
+              , min.cutoff = qlow, max.cutoff = qhigh
+              , split.by = splitby
+              , features = f)
+}
+# qUMAP(  )
 
 
 
