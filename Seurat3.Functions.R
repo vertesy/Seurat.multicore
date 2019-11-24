@@ -109,6 +109,7 @@ gene.name.check <- function(Seu.obj = ls.Seurat[[1]] ) {
 
 
 
+
 # Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
 multiFeaturePlot.A4 <- function(list.of.genes, obj = org, plot.reduction='umap'
                                 , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
@@ -227,15 +228,22 @@ fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj=org) { # fi
 
 
 # get Cells from metadata  ------------------------------------------------
-mmeta <- function(ColName.metadata = 'batch', obj = org, as_numeric =F) { # get a metadata column as a named vector
+getMetadataColumn <- mmeta <- function(ColName.metadata = 'batch', obj = combined.obj, as_numeric =F) { # get a metadata column as a named vector
+  stopifnot(ColName.metadata %in% colnames(obj@meta.data))
+  
   x = as.named.vector(obj@meta.data[ ,ColName.metadata, drop=F])
   if (as_numeric) {
     as.numeric.wNames(x)+1
   } else {x}
 }
 
+# getMetadataColumn <- function(obj=combined.obj, colname = metaD.CL.colname) {
+#   stopifnot(colname %in% colnames(combined.obj@meta.data))
+#   return(combined.obj[[colname]][,1])
+# }
+
 # GetCellIDs from metadata ---------------
-GetCellIDs.from.meta <- function(obj=org, ColName.meta = 'res.0.6', values = NA) {
+getCellIDs.from.meta <- function(obj=org, ColName.meta = 'res.0.6', values = NA) {
   if (is.na(values)) {
     
   }
@@ -244,7 +252,7 @@ GetCellIDs.from.meta <- function(obj=org, ColName.meta = 'res.0.6', values = NA)
   iprint(l(idx.matching.cells), 'cells found.')
   return(rownames(obj@meta.data)[idx.matching.cells])
 }
-# GetCellIDs.from.meta()
+# getCellIDs.from.meta()
 
 
 
