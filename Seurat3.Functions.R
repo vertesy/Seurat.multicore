@@ -15,7 +15,7 @@ try(require(doMC), silent = F)
 try(source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R"), silent = T)
 try(source("~/GitHub/Seurat.multicore/Saving.and.loading.R"), silent = T)
 try(source("~/GitHub/Seurat.multicore/Seurat3.Write.Out.CBCs.for.subset-bam.R"), silent = T)
-
+try(source("~/GitHub/Seurat.multicore/Seurat3.plotting.Functions.R"), silent = T)
 
 # ### Functions
 # For parallel processing of other functions see 
@@ -285,10 +285,10 @@ qUMAP <- function(f= 'TOP2A', obj =  combined.obj, splitby = NULL, qlow = "q10",
 
 # Work in progress ------------------------------------------------------------
 
-check.genes <- function(list.of.genes = ClassicMarkers, obj = seu3) { # check if genes exist in your dataset
-  missingGenes = setdiff(list.of.genes, rownames(obj))
-  if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
-  intersect(list.of.genes, rownames(obj))
-}
+# check.genes <- function(list.of.genes = ClassicMarkers, obj = seu3) { # check if genes exist in your dataset
+#   missingGenes = setdiff(list.of.genes, rownames(obj))
+#   if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
+#   intersect(list.of.genes, rownames(obj))
+# }
 
 
