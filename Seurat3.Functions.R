@@ -111,116 +111,6 @@ check.genes <- function(list.of.genes = ClassicMarkers, obj = combined.obj, assa
 }
 
 
-# Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
-multiFeaturePlot.A4 <- function(list.of.genes, obj = org, plot.reduction='umap', intersectionAssay = c('RNA', 'integrated')[1]
-                                , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
-                                , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
-                                , jpeg.res = 225, jpeg.q = 90) {
-  tictoc::tic()
-  ParentDir = OutDir
-  if (subdir) create_set_SubDir(... = p0(substitute(list.of.genes),'.', plot.reduction),'/')
-  
-  list.of.genes = check.genes(list.of.genes = list.of.genes, obj = obj, assay.slot = intersectionAssay)
-  lsG = iterBy.over(1:l(list.of.genes), by=nr.Row*nr.Col)
-  for (i in 1:l(lsG)) { 
-    genes = list.of.genes[lsG[[i]]]
-    iprint(i,genes )
-    plotname = kpp(c(plot.reduction,i, genes, 'jpg' ))
-    
-    plot.list = FeaturePlot(object = obj, features =genes, reduction = plot.reduction, combine = F
-                            , ncol = nr.Col, cols = colors 
-                            , min.cutoff = gene.min.exp, max.cutoff = gene.max.exp
-                            , pt.size = cex)
-    
-    for(i in 1:length(plot.list)) {
-      plot.list[[i]] <- plot.list[[i]] + NoLegend() + NoAxes()
-    }
-    
-    ggsave(filename = plotname, width = wA4, height = hA4, 
-           plot = cowplot::plot_grid(plotlist = plot.list, ncol = nr.Col, nrow = nr.Row)
-    )
-  }
-  
-  if (subdir) create_set_OutDir(... = ParentDir)
-  tictoc::toc()
-}; 
-
-
-
-
-
-
-
-
-# Save multiple FeatureHeatmaps from a list of genes on A4 jpeg -----------------------
-# code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
-
-multiFeatureHeatmap.A4 <- function(list.of.genes, obj = org, gene.per.page=5
-                                   , group.cells.by= "batch", plot.reduction='umap'
-                                   , cex = iround(3/gene.per.page), sep_scale = F
-                                   , gene.min.exp = 'q5', gene.max.exp = 'q95'
-                                   , jpeg.res = 225, jpeg.q = 90) {
-  
-  tictoc::tic()
-  list.of.genes = check.genes(list.of.genes, obj = obj)
-  
-  lsG = iterBy.over(1:l(list.of.genes), by=gene.per.page)
-  for (i in 1:l(lsG)) { print(i )
-    genes = list.of.genes[lsG[[i]]]
-    plotname = kpp(c("FeatureHeatmap",plot.reduction,i, genes, 'jpg' ))
-    print(plotname)
-    jjpegA4(plotname, r = jpeg.res, q = jpeg.q)
-    try(
-      FeatureHeatmap(obj, features.plot =genes , group.by = group.cells.by 
-                     , reduction.use = plot.reduction, do.return = F
-                     , sep.scale = sep_scale, min.exp = gene.min.exp, max.exp = gene.max.exp
-                     , pt.size = cex, key.position = "top")
-      , silent = F
-    )
-    try.dev.off()
-  }
-  tictoc::toc()
-}
-
-
-# plot.UMAP.tSNE.sidebyside ---------------------------------------------------------------------
-
-plot.UMAP.tSNE.sidebyside <- function(obj = org, grouping = 'res.0.6',
-                                      no_legend = F,
-                                      do_return = TRUE,
-                                      do_label = T,
-                                      label_size = 10,
-                                      vector_friendly = TRUE,
-                                      cells_use = NULL,
-                                      no_axes = T,
-                                      pt_size = 0.5, 
-                                      name.suffix = NULL,
-                                      width = hA4, heigth = 1.75*wA4, filetype = "pdf") { # plot a UMAP and tSNE sidebyside
-  
-  p1 <- DimPlot(object = obj, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
-                , no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size
-                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size) + 
-    ggtitle("tSNE") + theme(plot.title = element_text(hjust = 0.5))
-  
-  p2 <- DimPlot(object = obj, reduction.use = "umap", no.axes = no_axes, cells.use = cells_use
-                , no.legend = T, do.return = do_return, do.label = do_label, label.size = label_size
-                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size) + 
-    ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
-  
-  plots = plot_grid(p1, p2, labels=c("A", "B"), ncol = 2)
-  plotname=kpp( 'UMAP.tSNE', grouping, name.suffix, filetype)
-  
-  cowplot::save_plot(filename = plotname, plot = plots 
-                     , ncol = 2 # we're saving a grid plot of 2 columns
-                     , nrow = 1 # and 2 rows
-                     , base_width = width
-                     , base_height = heigth
-                     # each individual subplot should have an aspect ratio of 1.3
-                     # , base_aspect_ratio = 1.5
-  )
-}
-
-
 # replace zero indexed clusternames ------------------------------------------------
 fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj=org) { # fix zero indexing seurat clustering
   obj@meta.data[ ,ColName.metadata] =  as.numeric(obj@meta.data[ ,ColName.metadata])+1  
@@ -263,7 +153,6 @@ seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of v
   return(pct)
 }
 
-
 # plot percent of variation associated with each PC ---------------
 seu.plot.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of variation associated with each PC
   pct <- seu.PC.var.explained(obj)
@@ -272,14 +161,6 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj) { # Determine percent
 }
 
 
-# seu.add.parameter.list.2.seurat.object ---------------
-qUMAP <- function(f= 'TOP2A', obj =  combined.obj, splitby = NULL, qlow = "q10", qhigh = "q90") { 
-  FeaturePlot(combined.obj, reduction = 'umap'
-              , min.cutoff = qlow, max.cutoff = qhigh
-              , split.by = splitby
-              , features = f)
-}
-# qUMAP(  )
 
 
 
