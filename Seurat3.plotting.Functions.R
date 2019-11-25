@@ -11,7 +11,17 @@ try(require(ggplot2), silent = F)
 
 
 # ------------------------
-ssgCellFractionsBarplot.CORE <- function(data, plotname="Cell proportions per genotype") { # sg stands for "seurat ggplot"
+sgCellFractionsBarplot.Mseq <- function(data, seedNr=1989, group_by = "genotype",
+                                        plotname="Cell proportions") { # sg stands for "seurat ggplot"
+  set.seed(seedNr)
+  data %>%
+    group_by( genotype ) %>% #eval(substitute(group_by))
+    sample_n(NrCellsInSmallerDataSet ) %>%
+    ssgCellFractionsBarplot.CORE(plotname = plotname)
+}
+
+# ------------------------
+ssgCellFractionsBarplot.CORE <- function(data, plotname="Cell proportions per ...") { # sg stands for "seurat ggplot"
   data %>%
     ggplot( aes(fill=genotype,  #eval(substitute(group_by))
                 x = if (ww.variable.exists.and.true(p$'clusternames.are.defined')) Cl.names else integrated_snn_res.0.3)) +
@@ -23,27 +33,37 @@ ssgCellFractionsBarplot.CORE <- function(data, plotname="Cell proportions per ge
     labs(x = "Clusters", y = "Fraction")
 }
 
-# ------------------------
-sgCellFractionsBarplot.Mseq <- function(data, seedNr=1989, group_by = "genotype",
-                                        plotname="Cell proportions") { # sg stands for "seurat ggplot"
-  set.seed(seedNr)
-  data %>%
-    group_by( genotype ) %>% #eval(substitute(group_by))
-    sample_n(NrCellsInSmallerDataSet ) %>%
-    ssgCellFractionsBarplot.CORE(plotname = plotname)
-}
+# # sgCellFractionsBarplot ------------------------
+# sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident",
+#                                    plotname="Cell proportions") { # sg stands for "seurat ggplot"
+#   set.seed(seedNr)
+#   data %>%
+#     group_by( eval(substitute(group_by)) ) %>%
+#     sample_n(NrCellsInSmallerDataSet ) %>%
+#     ssgCellFractionsBarplot.CORE(plotname = plotname)
+# }
 
-# sgCellFractionsBarplot ------------------------
-sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident",
-                                   plotname="Cell proportions") { # sg stands for "seurat ggplot"
+# ------------------------
+sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident", fill_by="experiment",
+                                   label_sample_count=T, plotname="Cell proportions per ...") { # sg stands for "seurat ggplot"
+  # print(fill_by)
   set.seed(seedNr)
   data %>%
     group_by( eval(substitute(group_by)) ) %>%
     sample_n(NrCellsInSmallerDataSet ) %>%
-    ssgCellFractionsBarplot.CORE(plotname = plotname)
+    
+    ggplot(aes_string(fill= fill_by)) +
+    aes(x=Cl.names) + # ggplot(aes(fill= genotype)) +
+    # ggplot(aes(fill= genotype, x=Cl.names)) + #OLD way
+    geom_hline(yintercept=.5)  +
+    geom_bar( position="fill" ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    { if (label_sample_count) geom_text(aes(label=..count..), stat='count', position = position_fill(vjust=0.5)) } +
+    ggtitle(plotname) +
+    labs(x = "Clusters", y = "Fraction")
 }
 
-# ------------------------
+
 # ------------------------
 # ------------------------
 # ------------------------
@@ -95,17 +115,17 @@ ww.variable.exists.and.true <- function(var = al2, alt.message = NULL) {
 # ------------------------
 # ------------------------
 # 
-# sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident") { # sg stands for "seurat ggplot"
-#   set.seed(seedNr)
-#   data %>%
-#     group_by( eval(substitute(group_by)) ) %>%
-#     sample_n(NrCellsInSmallerDataSet ) %>%
-#     
-#     ggplot(aes(fill=experiment, x=Cl.names)) + 
-#     geom_hline(yintercept=.5)  +
-#     geom_bar( position="fill" ) + 
-#     theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-#     labs(x = "Clusters", y = "Fraction")
-# }
+sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident") { # sg stands for "seurat ggplot"
+  set.seed(seedNr)
+  data %>%
+    group_by( eval(substitute(group_by)) ) %>%
+    sample_n(NrCellsInSmallerDataSet ) %>%
+
+    ggplot(aes(fill=experiment, x=Cl.names)) +
+    geom_hline(yintercept=.5)  +
+    geom_bar( position="fill" ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(x = "Clusters", y = "Fraction")
+}
 
 # Work in progress ------------------------------------------------------------
