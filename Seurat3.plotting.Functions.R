@@ -115,17 +115,17 @@ ww.variable.exists.and.true <- function(var = al2, alt.message = NULL) {
 # ------------------------
 # ------------------------
 # 
-sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident") { # sg stands for "seurat ggplot"
-  set.seed(seedNr)
-  data %>%
-    group_by( eval(substitute(group_by)) ) %>%
-    sample_n(NrCellsInSmallerDataSet ) %>%
-
-    ggplot(aes(fill=experiment, x=Cl.names)) +
-    geom_hline(yintercept=.5)  +
-    geom_bar( position="fill" ) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    labs(x = "Clusters", y = "Fraction")
-}
+# sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident") { # sg stands for "seurat ggplot"
+#   set.seed(seedNr)
+#   data %>%
+#     group_by( eval(substitute(group_by)) ) %>%
+#     sample_n(NrCellsInSmallerDataSet ) %>%
+# 
+#     ggplot(aes(fill=experiment, x=Cl.names)) +
+#     geom_hline(yintercept=.5)  +
+#     geom_bar( position="fill" ) +
+#     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+#     labs(x = "Clusters", y = "Fraction")
+# }
 
 # Work in progress ------------------------------------------------------------
