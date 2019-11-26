@@ -157,7 +157,7 @@ seu.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of v
 seu.plot.PC.var.explained <- function(obj =  combined.obj) { # Determine percent of variation associated with each PC
   pct <- seu.PC.var.explained(obj)
   wbarplot(pct, ylab= "% of variation explained" , xlab="Principal Components")
-  barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex=.5)
+  barplot_label(round(pct, digits = 2), barplotted_variable = pct, cex=.5 )
 }
 
 

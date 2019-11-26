@@ -19,6 +19,20 @@ try(require(ggplot2), silent = F)
 # - # sgCellFractionsBarplot
 # - # sgCellFractionsBarplot
 
+# ---------------
+# ---------------
+# ---------------
+# ---------------
+# umapHiLightSel highlight a set of cells based on clusterIDs provided---------------
+umapHiLightSel <- function(obj = combined.obj, COI =  c("0", "2", "4", "5",  "11"),
+                           res.cl = 'integrated_snn_res.0.3') {
+  cellsSel = getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
+  DimPlot(combined.obj, reduction = "umap", group.by = res.cl, 
+          label = T, cells.highlight = cellsSel)
+  ggsave(filename = extPNG(kollapse("cells",COI, collapseby = '.')))
+}
+
+
 # seu.add.parameter.list.2.seurat.object ---------------
 qUMAP <- function(f= 'TOP2A', obj =  combined.obj, splitby = NULL, qlow = "q10", qhigh = "q90") { 
   FeaturePlot(combined.obj, reduction = 'umap'
