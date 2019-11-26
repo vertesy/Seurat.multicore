@@ -237,8 +237,20 @@ ww.variable.exists.and.true <- function(var = al2, alt.message = NULL) {
 
 # ------------------------
 
+save2umaps.A4 <- function(plot_list, pname = F) {
+  if (pname ==F) pname = substitute(plot_list)
+  p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 1, labels = LETTERS[1:l(plot_list)]  )
+  save_plot(plot = p1, filename = extPNG(pname), base_height = hA4, base_width = wA4)
+}
 
 # ------------------------
+save4umaps.A4 <- function(plot_list, pname = F) {
+  if (pname==F) pname = substitute(plot_list)
+  p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:l(plot_list)]  )
+  save_plot(plot = p1, filename = extPNG(pname), base_height = wA4, base_width = hA4)
+}
+
+
 # ------------------------
 # ------------------------
 # ------------------------
