@@ -164,10 +164,12 @@ sgCellFractionsBarplot.Mseq <- function(data, seedNr=1989, group_by = "genotype"
 }
 
 # ------------------------
-ssgCellFractionsBarplot.CORE <- function(data, plotname="Cell proportions per ...") { # sg stands for "seurat ggplot"
+ssgCellFractionsBarplot.CORE <- function(data, plotname="Cell proportions per ...", 
+                                         ClLabelExists = p$'clusternames.are.defined', AltLabel = p$'res.MetaD.colname') { # sg stands for "seurat ggplot"
+  LabelExists = ww.variable.exists.and.true(var = eval(ClLabelExists))
+  
   data %>%
-    ggplot( aes(fill=genotype,  #eval(substitute(group_by))
-                x = if (ww.variable.exists.and.true(p$'clusternames.are.defined')) Cl.names else integrated_snn_res.0.3)) +
+    aes(x=if (LabelExists) Cl.names else quote(AltLabel)) + # ggplot(aes(fill= genotype)) +
     ggtitle(plotname) +
     geom_bar( position="fill" ) +
     geom_hline(yintercept=.5, color='darkgrey')  +
@@ -188,15 +190,17 @@ ssgCellFractionsBarplot.CORE <- function(data, plotname="Cell proportions per ..
 
 # ------------------------
 sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident", fill_by="experiment",
-                                   label_sample_count=T, plotname="Cell proportions per ...") { # sg stands for "seurat ggplot"
-  # print(fill_by)
+                                   label_sample_count=T, plotname="Cell proportions per ...", 
+                                   ClLabelExists = p$'clusternames.are.defined', AltLabel =p$'res.MetaD.colname' ) { # sg stands for "seurat ggplot"
+  LabelExists = ww.variable.exists.and.true(var = eval(ClLabelExists))
+  if (LabelExists) iprint("Cl Labels found")
   set.seed(seedNr)
   data %>%
     group_by( eval(substitute(group_by)) ) %>%
     sample_n(NrCellsInSmallerDataSet ) %>%
     
     ggplot(aes_string(fill= fill_by)) +
-    aes(x=Cl.names) + # ggplot(aes(fill= genotype)) +
+    aes(x=if (LabelExists) Cl.names else quote(AltLabel)) + # ggplot(aes(fill= genotype)) +
     # ggplot(aes(fill= genotype, x=Cl.names)) + #OLD way
     geom_hline(yintercept=.5)  +
     geom_bar( position="fill" ) +
@@ -205,6 +209,8 @@ sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident", f
     ggtitle(plotname) +
     labs(x = "Clusters", y = "Fraction")
 }
+
+
 
 
 # ------------------------
