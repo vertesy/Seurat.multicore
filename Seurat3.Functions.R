@@ -39,6 +39,20 @@ try(source("~/GitHub/Seurat.multicore/Seurat3.plotting.Functions.R"), silent = T
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 
+parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^2) {
+  # https://satijalab.org/seurat/v3.0/future_vignette.html
+  cat(
+    "If you load futures before,
+    NormalizeData inside a foreach loop fails (Error writing to connection)
+    -> I assume 'future' and 'doMC' are not compatible
+    Loaded: library(future), workers set to 6,set Max mem size to 2GB "   )
+  
+  library(future)
+  plan("multiprocess", workers = workers_)
+  # So to set Max mem size to 2GB, you would run :
+  options(future.globals.maxSize = maxMemSize)
+}
+
 # ------------------------------------------------------------------------
 seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) {
   Cl.names_class= TopGenes[ clID.per.cell ]
