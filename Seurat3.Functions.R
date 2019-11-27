@@ -19,18 +19,63 @@ try(source("~/GitHub/Seurat.multicore/Seurat3.plotting.Functions.R"), silent = T
 
 # ### Functions
 # For parallel processing of other functions see 
-# 
-# - read10x
-# - FindAllMarkers.multicore
-# - multiFeaturePlot.A4
-# - multiFeatureHeatmap.A4
-# - LabelPoint
-# - LabelUR
-# - LabelUL
-# - LabelBR
-# - LabelBL
+# - clip10Xcellname 
+# - read10x 
+# - FindAllMarkers.multicore 
+# - # FindMarker.wrapper 
+# - gene.name.check 
+# - check.genes 
+# - fixZeroIndexing.seurat 
+# - getMetadataColumn <- mmeta 
+# - # getMetadataColumn 
+# - getCellIDs.from.meta 
+# - seu.PC.var.explained 
+# - seu.plot.PC.var.explained 
 
 
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+# ------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------
+seu.Make.Cl.Label.per.cell <- function(TopGenes, clID.per.cell) {
+  Cl.names_class= TopGenes[ clID.per.cell ]
+  Cl.names_wNr = p0(Cl.names_class,' (',names(Cl.names_class),')')
+  return(Cl.names_wNr)
+}
+# seu.Make.Cl.Label.per.cell(TopGenes = TopGenes.Classic, 
+#                            clID.per.cell = getMetadataColumn(ColName.metadata = metaD.CL.colname)  )
+# ------------------------------------------------------------------------
+add.Cl.Label.2.Metadata <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell ) {
+  obj@meta.data[, metaD.colname ] = Label.per.cell
+  iprint(metaD.colname, "contains the named identitites. Use Idents(combined.obj) = '...'. The names are:", unique(Label.per.cell))
+  return(obj)
+}  
+# combined.obj <- add.Cl.Label.2.Metadata(obj = combined.obj, metaD.colname = metaD.colname.labeled, Label.per.cell=Cl.Label.per.cell )
+
+# ------------------------------------------------------------------------
+
+umapNamedClusters <- function(obj = combined.obj, metaD.colname = metaD.colname.labeled, ext = "png") {
+  fname = ppp("Named.clusters", metaD.colname, ext)
+  p.named = 
+    DimPlot(obj, reduction = "umap", group.by = metaD.colname, label = T) +
+    NoLegend() + 
+    ggtitle(metaD.colname)
+  save_plot(p.named, filename = fname); p.named
+}
+# umapNamedClusters(obj = combined.obj, metaD.colname = metaD.colname.labeled)
+
+# ------------------------------------------------------------------------
+
+
+
+# ------------------------------------------------------------------------
+clip10Xcellname <- function(cellnames) str_split_fixed(cellnames, "_", n = 2)[,1]
+
+# ------------------------------------------------------------------------
+make10Xcellname <- function(cellnames, suffix="_1") p0(cellnames, suffix)
 
 # read10x from gzipped and using features.tsv [from SO]------------------------
 read10x <- function(dir) {
