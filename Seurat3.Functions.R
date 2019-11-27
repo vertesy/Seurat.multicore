@@ -19,24 +19,37 @@ try(source("~/GitHub/Seurat.multicore/Seurat3.plotting.Functions.R"), silent = T
 
 # ### Functions
 # For parallel processing of other functions see 
-# - clip10Xcellname 
-# - read10x 
-# - FindAllMarkers.multicore 
-# - # FindMarker.wrapper 
-# - gene.name.check 
-# - check.genes 
-# - fixZeroIndexing.seurat 
-# - getMetadataColumn <- mmeta 
-# - # getMetadataColumn 
-# - getCellIDs.from.meta 
-# - seu.PC.var.explained 
-# - seu.plot.PC.var.explained 
+# - seuSaveRds
+# - parallel.computing.by.future
+# - seu.Make.Cl.Label.per.cell
+# - add.Cl.Label.2.Metadata
+# - umapNamedClusters
+# - clip10Xcellname
+# - make10Xcellname
+# - read10x
+# - FindAllMarkers.multicore
+# - gene.name.check
+# - check.genes
+# - fixZeroIndexing.seurat
+# - getMetadataColumn <- mmeta
+# - # getMetadataColumn
+#   - getCellIDs.from.meta
+# - seu.PC.var.explained
+# - seu.plot.PC.var.explained
 
 
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
+
+seuSaveRds <- function(object = ls.Seurat, tags = setupFlags, use_Original_OutDir = F) {
+  if (use_Original_OutDir) create_set_Original_OutDir()
+  iprint(fname.comb.rds = ppp(substitute(object) , tags, idate(), ".Rds"))
+  ssaveRDS(object = object, filename = fname.comb.rds)
+}
+
+
 # ------------------------------------------------------------------------
 
 parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^2) {
