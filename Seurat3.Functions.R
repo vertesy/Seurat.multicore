@@ -40,7 +40,28 @@ try(source("~/GitHub/Seurat.multicore/Seurat3.plotting.Functions.R"), silent = T
 
 # ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
+
+
+
+sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) {
+  cellIDs = rownames(metaDF)
+  nr_cells = floor(l(cellIDs) * pc)
+  cellIDs.keep = sample(cellIDs, size = nr_cells, replace = FALSE)
+  return(cellIDs.keep)
+}
+
 # ------------------------------------------------------------------------
+
+subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25 ) {
+  cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction)
+  
+  obj_Xpc <- subset(obj, cells = cellIDs.keep) # downsample
+  saveRDS(obj_Xpc, compress = TRUE,
+          file = ppp(p0(InputDir, 'seu.ORC'), l(cellIDs.keep), 'cells.with.min.features', p$min.features,"Rds" ) ); say()
+  
+}
+
+
 # ------------------------------------------------------------------------
 
 seuSaveRds <- function(object = ls.Seurat, tags = setupFlags, use_Original_OutDir = F) {
@@ -55,10 +76,17 @@ seuSaveRds <- function(object = ls.Seurat, tags = setupFlags, use_Original_OutDi
 parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^2) {
   # https://satijalab.org/seurat/v3.0/future_vignette.html
   cat(
-    "If you load futures before,
+    "1. If you load futures before you finished using foreach loops,
     NormalizeData inside a foreach loop fails (Error writing to connection)
     -> I assume 'future' and 'doMC' are not compatible
-    Loaded: library(future), workers set to 6,set Max mem size to 2GB "   )
+
+    2. If you setup computing on e.g. six cores, it runs 6 instances of R with the entire memory space copied.
+    If you run out of memory, the system starts using the SSD as memory, and it slows you down extremely extremely extremely.
+    -> Therefore it is important to clean up the memory space before setting up multicore computation.
+
+    Loaded: library(future), workers set to 6 (def),set Max mem size to 2GB (def)."   )
+  
+  memory.biggest.objects()
   
   library(future)
   plan("multiprocess", workers = workers_)
