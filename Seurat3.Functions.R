@@ -14,7 +14,7 @@ try(require(doMC), silent = F)
 
 try(source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R"), silent = T)
 try(source("~/GitHub/Seurat.multicore/Saving.and.loading.R"), silent = T)
-try(source("~/GitHub/Seurat.multicore/Seurat3.Write.Out.CBCs.for.subset-bam.R"), silent = T)
+try(source("~/GitHub/pseudoBulk/barcode.export.from.Seurat/Seurat3.Write.Out.CBCs.for.subset-bam.R"), silent = T)
 try(source("~/GitHub/Seurat.multicore/Seurat3.plotting.Functions.R"), silent = T)
 
 # ### Functions
@@ -39,36 +39,7 @@ try(source("~/GitHub/Seurat.multicore/Seurat3.plotting.Functions.R"), silent = T
 
 
 # ------------------------------------------------------------------------
-# ------------------------------------------------------------------------
 
-
-
-sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) {
-  cellIDs = rownames(metaDF)
-  nr_cells = floor(l(cellIDs) * pc)
-  cellIDs.keep = sample(cellIDs, size = nr_cells, replace = FALSE)
-  return(cellIDs.keep)
-}
-
-# ------------------------------------------------------------------------
-
-subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25 ) {
-  cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction)
-  
-  obj_Xpc <- subset(obj, cells = cellIDs.keep) # downsample
-  saveRDS(obj_Xpc, compress = TRUE,
-          file = ppp(p0(InputDir, 'seu.ORC'), l(cellIDs.keep), 'cells.with.min.features', p$min.features,"Rds" ) ); say()
-  
-}
-
-
-# ------------------------------------------------------------------------
-
-seuSaveRds <- function(object = ls.Seurat, tags = setupFlags, use_Original_OutDir = F) {
-  if (use_Original_OutDir) create_set_Original_OutDir()
-  iprint(fname.comb.rds = ppp(substitute(object) , tags, idate(), ".Rds"))
-  ssaveRDS(object = object, filename = fname.comb.rds)
-}
 
 
 # ------------------------------------------------------------------------
@@ -86,6 +57,7 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
 
     Loaded: library(future), workers set to 6 (def),set Max mem size to 2GB (def)."   )
   
+  gc(full = T)
   memory.biggest.objects()
   
   library(future)
