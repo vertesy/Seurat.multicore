@@ -4,11 +4,15 @@
 
 
 # Save an object -----------------------------------------------
-isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T){ # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T){ # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
   path_rdata = paste0("~/Documents/RDS.files/", basename(OutDir))
   dir.create(path_rdata)
   
   if (showMemObject) { memory.biggest.objects() }
+  if ( "seurat" %in% is(obj) & saveParams) { 
+    try(obj@misc$p <- p, silent = T)
+    try(obj@misc$all.genes  <- all.genes, silent = T)
+  }
   fnameBase = kppu(prefix, substitute(object), suffix, idate())
   fname = MarkdownReportsDev::kollapse(path_rdata, "/",fnameBase , ".Rds")
   tictoc::tic()
@@ -21,10 +25,14 @@ isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T){ # fas
 
 
 # Save an object -----------------------------------------------
-isave.RDS.pigz <- function(object, prefix =NULL, suffix=NULL, showMemObject=T){ # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+isave.RDS.pigz <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T){ # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
   path_rdata = paste0("~/Documents/RDS.files/", basename(OutDir))
   dir.create(path_rdata)
   
+  if ( "seurat" %in% is(obj) & saveParams) { 
+    try(obj@misc$p <- p, silent = T)
+    try(obj@misc$all.genes  <- all.genes, silent = T)
+  }
   if (showMemObject) { memory.biggest.objects() }
   fnameBase = kppu(prefix, substitute(object), suffix, idate())
   fname = MarkdownReportsDev::kollapse(path_rdata, "/",fnameBase , ".Rds")
