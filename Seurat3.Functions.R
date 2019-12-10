@@ -39,7 +39,23 @@ try(source("~/GitHub/Seurat.multicore/Seurat3.plotting.Functions.R"), silent = T
 
 
 # ------------------------------------------------------------------------
-
+seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix = ".fromMeta") {
+  NotFound  = setdiff(colnames(obj), rownames(MetaData.ORC))
+  Found     = intersect(colnames(obj), rownames(MetaData.ORC))
+  if (l(NotFound)) iprint(l(NotFound), 'cells were not found in meta, e.g.: ', trail(NotFound, N=10))
+  
+  mCols.new = colnames(meta)
+  mCols.old = colnames(obj@meta.data)
+  overlap = intersect(mCols.new, mCols.old)
+  if (l(overlap)) {
+    iprint(l(overlap), 'metadata columns already exist in the seurat object: ', overlap, '. These are tagged as: *', suffix)
+    colnames(meta)[overlap] = p0(overlap, suffix)
+  }
+  mCols.add = colnames(meta)
+  obj@meta.data[Found, mCols.add] = meta[ Found,]
+  
+  return(obj)
+} # x=seu.add.meta.from.table()
 
 
 # ------------------------------------------------------------------------
@@ -61,7 +77,8 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
   memory.biggest.objects()
   
   library(future)
-  plan("multiprocess", workers = workers_)
+  # plan("multiprocess", workers = workers_)
+  plan("multisession", workers = workers_)
   # So to set Max mem size to 2GB, you would run :
   options(future.globals.maxSize = maxMemSize)
 }
