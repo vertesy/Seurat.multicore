@@ -6,18 +6,19 @@
 try(require(Seurat), silent = F)
 try(require(ggplot2), silent = F)
 
-# ### Functions for plotting
-# - qUMAP
-# - multiFeaturePlot.A4
-# - multiFeatureHeatmap.A4
-# - plot.UMAP.tSNE.sidebyside
-# - sgCellFractionsBarplot.Mseq
-# - ssgCellFractionsBarplot.CORE
-# - # sgCellFractionsBarplot
-# - sgCellFractionsBarplot
-# - ww.variable.exists.and.true
-# - # sgCellFractionsBarplot
-# - # sgCellFractionsBarplot
+#### Functions in Seurat3.plotting.Functions.R
+
+# - `umapHiLightSel()` # Highlight a set of cells based on clusterIDs provided. 
+# - `qUMAP()` # Quick umaps 
+# - `multiFeaturePlot.A4()` # Save multiple FeaturePlot from a list of genes on A4 jpeg 
+# - `multiFeatureHeatmap.A4()` # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg  
+# - `plot.UMAP.tSNE.sidebyside()` # plot a UMAP and tSNE sidebyside 
+# - `sgCellFractionsBarplot.Mseq()` # Cell Fractions Barplot for MULTI-seq. sg stands for "seurat ggplot". 
+# - `ssgCellFractionsBarplot.CORE()` # Cell Fractions Barplots, basic. sg stands for "seurat ggplot". 
+# - `sgCellFractionsBarplot()` # Cell Fractions Barplots. sg stands for "seurat ggplot". 
+# - `ww.variable.exists.and.true()` # Check if a variable exists and its value is TRUE. 
+# - `save2umaps.A4()` # Save 2 umaps on A4. 
+# - `save4umaps.A4()` # Save 4 umaps on A4. 
 
 # ---------------
 # ---------------
@@ -25,7 +26,7 @@ try(require(ggplot2), silent = F)
 # ---------------
 # umapHiLightSel highlight a set of cells based on clusterIDs provided---------------
 umapHiLightSel <- function(obj = combined.obj, COI =  c("0", "2", "4", "5",  "11"),
-                           res.cl = 'integrated_snn_res.0.3') {
+                           res.cl = 'integrated_snn_res.0.3') { # Highlight a set of cells based on clusterIDs provided.
   cellsSel = getCellIDs.from.meta(obj, values = COI, ColName.meta = res.cl)
   DimPlot(combined.obj, reduction = "umap", group.by = res.cl, 
           label = T, cells.highlight = cellsSel)
@@ -33,8 +34,8 @@ umapHiLightSel <- function(obj = combined.obj, COI =  c("0", "2", "4", "5",  "11
 }
 
 
-# seu.add.parameter.list.2.seurat.object ---------------
-qUMAP <- function(f= 'TOP2A', obj =  combined.obj, splitby = NULL, qlow = "q10", qhigh = "q90") { 
+# Quick umaps ---------------
+qUMAP <- function(f= 'TOP2A', obj =  combined.obj, splitby = NULL, qlow = "q10", qhigh = "q90") { # Quick umaps
   FeaturePlot(combined.obj, reduction = 'umap'
               , min.cutoff = qlow, max.cutoff = qhigh
               , split.by = splitby
@@ -47,7 +48,7 @@ qUMAP <- function(f= 'TOP2A', obj =  combined.obj, splitby = NULL, qlow = "q10",
 multiFeaturePlot.A4 <- function(list.of.genes, obj = org, plot.reduction='umap', intersectionAssay = c('RNA', 'integrated')[1]
                                 , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = round(0.1/(nr.Col*nr.Row), digits = 2)
                                 , gene.min.exp = 'q01', gene.max.exp = 'q99', subdir =T
-                                , jpeg.res = 225, jpeg.q = 90) {
+                                , jpeg.res = 225, jpeg.q = 90) { # Save multiple FeaturePlot from a list of genes on A4 jpeg
   tictoc::tic()
   ParentDir = OutDir
   if (subdir) create_set_SubDir(... = p0(substitute(list.of.genes),'.', plot.reduction),'/')
@@ -91,7 +92,7 @@ multiFeatureHeatmap.A4 <- function(list.of.genes, obj = org, gene.per.page=5
                                    , group.cells.by= "batch", plot.reduction='umap'
                                    , cex = iround(3/gene.per.page), sep_scale = F
                                    , gene.min.exp = 'q5', gene.max.exp = 'q95'
-                                   , jpeg.res = 225, jpeg.q = 90) {
+                                   , jpeg.res = 225, jpeg.q = 90) { # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg 
   
   tictoc::tic()
   list.of.genes = check.genes(list.of.genes, obj = obj)
@@ -155,7 +156,7 @@ plot.UMAP.tSNE.sidebyside <- function(obj = org, grouping = 'res.0.6',
 
 # ------------------------
 sgCellFractionsBarplot.Mseq <- function(data, seedNr=1989, group_by = "genotype",
-                                        plotname="Cell proportions") { # sg stands for "seurat ggplot"
+                                        plotname="Cell proportions") { # Cell Fractions Barplot for MULTI-seq. sg stands for "seurat ggplot".
   set.seed(seedNr)
   data %>%
     group_by( genotype ) %>% #eval(substitute(group_by))
@@ -165,7 +166,7 @@ sgCellFractionsBarplot.Mseq <- function(data, seedNr=1989, group_by = "genotype"
 
 # ------------------------
 ssgCellFractionsBarplot.CORE <- function(data, plotname="Cell proportions per ...", 
-                                         ClLabelExists = p$'clusternames.are.defined', AltLabel = p$'res.MetaD.colname') { # sg stands for "seurat ggplot"
+                                         ClLabelExists = p$'clusternames.are.defined', AltLabel = p$'res.MetaD.colname') { # Cell Fractions Barplots, basic. sg stands for "seurat ggplot".
   LabelExists = ww.variable.exists.and.true(var = eval(ClLabelExists))
   
   data %>%
@@ -178,20 +179,10 @@ ssgCellFractionsBarplot.CORE <- function(data, plotname="Cell proportions per ..
     labs(x = "Clusters", y = "Fraction")
 }
 
-# # sgCellFractionsBarplot ------------------------
-# sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident",
-#                                    plotname="Cell proportions") { # sg stands for "seurat ggplot"
-#   set.seed(seedNr)
-#   data %>%
-#     group_by( eval(substitute(group_by)) ) %>%
-#     sample_n(NrCellsInSmallerDataSet ) %>%
-#     ssgCellFractionsBarplot.CORE(plotname = plotname)
-# }
-
 # ------------------------
 sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident", fill_by="experiment",
                                    label_sample_count=T, plotname="Cell proportions per ...", 
-                                   ClLabelExists = p$'clusternames.are.defined', AltLabel =p$'res.MetaD.colname' ) { # sg stands for "seurat ggplot"
+                                   ClLabelExists = p$'clusternames.are.defined', AltLabel =p$'res.MetaD.colname' ) { # Cell Fractions Barplots. sg stands for "seurat ggplot".
   LabelExists = ww.variable.exists.and.true(var = eval(ClLabelExists))
   if (LabelExists) iprint("Cl Labels found")
   set.seed(seedNr)
@@ -228,7 +219,7 @@ sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident", f
 #' @export
 #' @examples ww.variable.and.path.exists(path = B, alt.message = "Hello, your path/var does not exist.")
 
-ww.variable.exists.and.true <- function(var = al2, alt.message = NULL) {
+ww.variable.exists.and.true <- function(var = al2, alt.message = NULL) { # Check if a variable exists and its value is TRUE.
   Variable.Name = substitute(var)
   if (exists(as.character(Variable.Name))) {
     if (isTRUE(var)) {
@@ -254,17 +245,16 @@ ww.variable.exists.and.true <- function(var = al2, alt.message = NULL) {
 # ww.variable.exists.and.true(al4)
 
 
-
 # ------------------------
 
-save2umaps.A4 <- function(plot_list, pname = F) {
+save2umaps.A4 <- function(plot_list, pname = F) { # Save 2 umaps on A4.
   if (pname ==F) pname = substitute(plot_list)
   p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 1, labels = LETTERS[1:l(plot_list)]  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = hA4, base_width = wA4)
 }
 
 # ------------------------
-save4umaps.A4 <- function(plot_list, pname = F) {
+save4umaps.A4 <- function(plot_list, pname = F) { # Save 4 umaps on A4.
   if (pname==F) pname = substitute(plot_list)
   p1 = plot_grid(plotlist = plot_list, nrow = 2, ncol = 2, labels = LETTERS[1:l(plot_list)]  )
   save_plot(plot = p1, filename = extPNG(pname), base_height = wA4, base_width = hA4)
@@ -308,4 +298,16 @@ save4umaps.A4 <- function(plot_list, pname = F) {
 #     labs(x = "Clusters", y = "Fraction")
 # }
 
+# # sgCellFractionsBarplot ------------------------
+# sgCellFractionsBarplot <- function(data, seedNr=1989, group_by = "orig.ident",
+#                                    plotname="Cell proportions") { # sg stands for "seurat ggplot"
+#   set.seed(seedNr)
+#   data %>%
+#     group_by( eval(substitute(group_by)) ) %>%
+#     sample_n(NrCellsInSmallerDataSet ) %>%
+#     ssgCellFractionsBarplot.CORE(plotname = plotname)
+# }
+
+
 # Work in progress ------------------------------------------------------------
+

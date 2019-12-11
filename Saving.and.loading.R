@@ -1,7 +1,20 @@
 # Saving and loading R objects: performance testing
 # Modified from: https://rpubs.com/jeffjjohnston/rds_compression 
 
+#### Functions in Saving.and.loading.R
 
+# - `isave.RDS()` # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+# - `isave.RDS.pigz()` # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+# - `isave.image()` # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+# - `subsetSeuObj.and.Save()` # subset a compressed Seurat Obj and save it in wd.
+# - `seuSaveRds()` # Save a compressed Seurat Object, with parallel gzip by pgzip
+# - `sampleNpc()` # Sample N % of a dataframe (obj@metadata), and return the cell IDs.
+# - `rrRDS()` # Load a list of RDS files with parallel ungzip by pgzip.
+# - `sssRDS()` #  Save multiple objects into a list of RDS files using parallel gzip by pgzip (optional).
+# - `ssaveRDS()` # Save an object with parallel gzip by pgzip.
+# - `rreadRDS()` # Read an object with parallel ungzip by pgzip.
+# - `snappy_pipe()` # Alternative, fast compression. Low compression rate, lightning fast.
+# - `pigz_pipe()` # Alternative: normal gzip output (& compression rate), ~*cores faster in zipping.
 
 # Save an object -----------------------------------------------
 isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T){ # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
@@ -9,9 +22,9 @@ isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, savePa
   dir.create(path_rdata)
   
   if (showMemObject) { memory.biggest.objects() }
-  if ( "seurat" %in% is(obj) & saveParams) { 
-    try(obj@misc$p <- p, silent = T)
-    try(obj@misc$all.genes  <- all.genes, silent = T)
+  if ( "seurat" %in% is(object) & saveParams) { 
+    try(object@misc$p <- p, silent = T)
+    try(object@misc$all.genes  <- all.genes, silent = T)
   }
   fnameBase = kppu(prefix, substitute(object), suffix, idate())
   fname = MarkdownReportsDev::kollapse(path_rdata, "/",fnameBase , ".Rds")
@@ -29,9 +42,9 @@ isave.RDS.pigz <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, s
   path_rdata = paste0("~/Documents/RDS.files/", basename(OutDir))
   dir.create(path_rdata)
   
-  if ( "seurat" %in% is(obj) & saveParams) { 
-    try(obj@misc$p <- p, silent = T)
-    try(obj@misc$all.genes  <- all.genes, silent = T)
+  if ( "seurat" %in% is(object) & saveParams) { 
+    try(object@misc$p <- p, silent = T)
+    try(object@misc$all.genes  <- all.genes, silent = T)
   }
   if (showMemObject) { memory.biggest.objects() }
   fnameBase = kppu(prefix, substitute(object), suffix, idate())
@@ -62,7 +75,7 @@ isave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # 
 
 # ------------------------------------------------------------------------
 
-subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25 ) {
+subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25 ) { # subset a compressed Seurat Obj and save it in wd.
   cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction)
   
   obj_Xpc <- subset(obj, cells = cellIDs.keep) # downsample
@@ -74,7 +87,7 @@ subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25 ) {
 
 # ------------------------------------------------------------------------
 
-seuSaveRds <- function(object = ls.Seurat, tags = setupFlags, use_Original_OutDir = F) {
+seuSaveRds <- function(object = ls.Seurat, tags = setupFlags, use_Original_OutDir = F) { # Save a compressed Seurat Object, with parallel gzip by pgzip
   if (use_Original_OutDir) create_set_Original_OutDir()
   fname.comb.rds = ppp(substitute(object), tags, idate(), ".Rds")
   iprint( fname.comb.rds)
@@ -84,7 +97,7 @@ seuSaveRds <- function(object = ls.Seurat, tags = setupFlags, use_Original_OutDi
 
 # ------------------------------------------------------------------------
 
-sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) {
+sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) { # Sample N % of a dataframe (obj@metadata), and return the cell IDs.
   cellIDs = rownames(metaDF)
   nr_cells = floor(l(cellIDs) * pc)
   cellIDs.keep = sample(cellIDs, size = nr_cells, replace = FALSE)
@@ -94,7 +107,7 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) {
 # Wrapper layer 2 (top) -----------------------------------------------------------------------------------
 
 # read / load multiple objects 
-rrRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org"), ...) { # load a list of RDS files with parallel unzip pgzip
+rrRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org"), ...) { # Load a list of RDS files with parallel ungzip by pgzip.
   tictoc::tic()
   path_rdata = paste0("~/Documents/RDS.files/", basename(OutDir))
   iprint("Looking for files under:" , path_rdata)
@@ -121,8 +134,8 @@ rrRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org"), ...) { # l
 
 
 
-# save multiple objects using pigz by default
-sssRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org.ALL", "org"), name.suffix =NULL, ...) { # parallel save RDS
+# Save multiple objects using pigz by default ---------------------------------------------
+sssRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org.ALL", "org"), name.suffix =NULL, ...) { #  Save multiple objects into a list of RDS files using parallel gzip by pgzip (optional).
   tictoc::tic()
   base_name <- character()
   path_rdata = paste0("~/Documents/RDS.files/", basename(OutDir))
@@ -144,8 +157,7 @@ sssRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org.ALL", "org")
 }
 
 # Wrapper layer 1 -----------------------------------------------------------------------------------
-ssaveRDS <- function(object, filename, con_func = list(pigz_pipe, snappy_pipe)[[1]], 
-                     func_type = c("pipe", "builtin")[1], ...) {
+ssaveRDS <- function(object, filename, con_func = list(pigz_pipe, snappy_pipe)[[1]], func_type = c("pipe", "builtin")[1], ...) { # Save an object with parallel gzip by pgzip.
   tictoc::tic()
   if(func_type == "builtin") {
     con <- con_func(filename)
@@ -157,8 +169,7 @@ ssaveRDS <- function(object, filename, con_func = list(pigz_pipe, snappy_pipe)[[
   tictoc::toc()
 }
 
-rreadRDS <- function(filename, con_func = list(pigz_pipe, snappy_pipe)[[1]], 
-                     func_type = c("pipe", "builtin")[1], ...) {
+rreadRDS <- function(filename, con_func = list(pigz_pipe, snappy_pipe)[[1]], func_type = c("pipe", "builtin")[1], ...) {  # Read an object with parallel ungzip by pgzip.
   tictoc::tic()
   if(func_type == "builtin") {
     con <- con_func(filename)
@@ -173,7 +184,7 @@ rreadRDS <- function(filename, con_func = list(pigz_pipe, snappy_pipe)[[1]],
 
 # Pipes -----------------------------------------------------------------------------------
 
-snappy_pipe <- function(filename, mode="read") { # low compression rate, lightning fast
+snappy_pipe <- function(filename, mode="read") { # Alternative, fast compression. Low compression rate, lightning fast.
   if(mode == "read") {
     con <- pipe(paste0("cat ", filename, " | snzip -dc"), "rb")
   } else {
@@ -183,7 +194,7 @@ snappy_pipe <- function(filename, mode="read") { # low compression rate, lightni
 }
 
 
-pigz_pipe <- function(filename, mode="read", cores=6) { # normal gzip compression rate, ~*cores faster in zipping
+pigz_pipe <- function(filename, mode="read", cores=6) { # Alternative: normal gzip output (& compression rate), ~*cores faster in zipping.
   if(mode == "read") {
     con <- pipe(paste0("cat ", filename, " | pigz -dcp ", cores), "rb")
   } else {
