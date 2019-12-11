@@ -1,4 +1,4 @@
-# Multicore functions and parallel computing implementations for Seurat 2 & 3
+# Multicore functions / parallel implementations plus speed optimized & untility functions for Seurat 2 & 3 
 
 Multicore and utility functions & implementations for Seurat using doMC / foreach packages.
 Implementations are either from me or found on the web. 
@@ -65,15 +65,57 @@ options(future.globals.maxSize = 4000 * 1024^2)
 - FilterCells; subset (in v3)
 - NormalizeData
 
-### 3. Parallel Implementation by Seurat
-- ScaleData
-- Jackstraw
+### 3. Parallel Implementation by Seurat (3.1)
+- NormalizeData
+- Jackstraw (from v2)
+- ScaleData (from v2)
+- FindMarkers
+- FindIntegrationAnchors
+- FindClusters 
 
 ### 4. No Parallel Implementation
 - RunTSNE
 - RunUMAP
 
 ### 5. Other functions implemented / collected here
+
+
+#### Functions in main script
+
+- `parallel.computing.by.future()`  # Run gc(), load multi-session computing and extend memory limits.
+- `seu.Make.Cl.Label.per.cell()`  # Take a named vector (of e.g. values ="gene names", names = clusterID), and a vector of cell-IDs and make a vector of "GeneName.ClusterID".
+- `add.Cl.Label.2.Metadata()`   # Add a metadata column
+- `umapNamedClusters()`   # Plot and save umap based on metadata column.
+- `clip10Xcellname()`   # Clip all suffices after underscore (10X adds it per chip-lane, Seurat adds in during integration).
+- `make10Xcellname()`   # Add a suffix
+- `read10x()`   # read10x from gzipped and using features.tsv
+- `FindAllMarkers.multicore()`  # Multicore version of FindAllMarkers.
+- `gene.name.check()`   # Check gene names in a seurat object, for naming conventions (e.g.: mitochondrial reads have - or .). Use for reading .mtx & writing .rds files.
+- `check.genes()`   # Check if genes exist in your dataset.
+- `fixZeroIndexing.seurat()`  # Fix zero indexing in seurat clustering, to 1-based indexing
+- `getMetadataColumn()` <- mmeta  # Get a metadata column as a named vector
+- `getCellIDs.from.meta()`  # Get cellIDs from a metadata column, matching a list of values (using %in%).
+- `seu.add.meta.from.table()`   # Add to obj@metadata from an external table
+- `seu.PC.var.explained()`  # Determine percent of variation associated with each PC
+- `seu.plot.PC.var.explained()`   # Plot the percent of variation associated with each PC
+
+#### Functions in Saving.and.loading.R
+
+- `isave.RDS()` # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+- `isave.RDS.pigz()` # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+- `isave.image()` # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
+- `subsetSeuObj.and.Save()` # subset a compressed Seurat Obj and save it in wd.
+- `seuSaveRds()` # Save a compressed Seurat Object, with parallel gzip by pgzip
+- `sampleNpc()` # Sample N % of a dataframe (obj@metadata), and return the cell IDs.
+- `rrRDS()` # Load a list of RDS files with parallel ungzip by pgzip.
+- `sssRDS()` #  Save multiple objects into a list of RDS files using parallel gzip by pgzip (optional).
+- `ssaveRDS()` # Save an object with parallel gzip by pgzip.
+- `rreadRDS()` # Read an object with parallel ungzip by pgzip.
+- `snappy_pipe()` # Alternative, fast compression. Low compression rate, lightning fast.
+- `pigz_pipe()` # Alternative: normal gzip output (& compression rate), ~*cores faster in zipping.
+
+#### Functions in main script
+
 - multiFeaturePlot.A4
   - multi-core implementation (of generating plots) did not work: it kept hanging at n*100% cpu use.
 - multiFeatureHeatmap.A4
