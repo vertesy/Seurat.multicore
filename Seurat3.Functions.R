@@ -236,8 +236,8 @@ getCellIDs.from.meta <- function(obj=org, ColName.meta = 'res.0.6', values = NA)
 
 # Add to obj@metadata from an external table ------------------------------------------------------------------------
 seu.add.meta.from.table <- function(obj = seu.ORC, meta = MetaData.ORC, suffix = ".fromMeta") { # Add to obj@metadata from an external table
-  NotFound  = setdiff(colnames(obj), rownames(MetaData.ORC))
-  Found     = intersect(colnames(obj), rownames(MetaData.ORC))
+  NotFound  = setdiff(colnames(obj), rownames(meta))
+  Found     = intersect(colnames(obj), rownames(meta))
   if (l(NotFound)) iprint(l(NotFound), 'cells were not found in meta, e.g.: ', trail(NotFound, N=10))
   
   mCols.new = colnames(meta)
@@ -270,6 +270,121 @@ seu.plot.PC.var.explained <- function(obj =  combined.obj) { # Plot the percent 
 }
 
 
+
+plotTheSoup <- function(CellR.OutputDir = "/Users/abel.vertesy/Dropbox/Abel.IMBA/Data/SoupX_pbmc4k_demo/") {
+  library(SoupX)
+  # Read In ------------------------
+  sc = load10X(CellR.OutputDir, keepDroplets = TRUE)
+  # Profiling the soup ------------------------
+  sc = estimateSoup(sc)
+  
+  # Plot top gene's expression ----------------------------------------------------------------
+  soupProfile = head(sc$soupProfile[order(sc$soupProfile$est, decreasing = TRUE), ], n = 20)
+  soupX.cellfree.RNA.profile = 100 * col2named.vector(soupProfile[,1,drop=F])
+  wbarplot(soupX.cellfree.RNA.profile
+           , ylab="% Reads in the Soup"
+           , sub = paste("Within the", basename(CellR.OutputDir), "dataset")
+           , tilted_text = T)
+  barplot_label(barplotted_variable = soupX.cellfree.RNA.profile
+                , labels = percentage_formatter(soupX.cellfree.RNA.profile/100, digitz = 2)
+                , TopOffset = .4, srt = 90, cex=.75)
+  
+  # Plot summarize expression ----------------------------------------------------------------
+  soup.RP.sum   <- colSums(soupProfile[grep('^RPL|^RPS', rownames(soupProfile)),])
+  soup.RPL.sum   <- colSums(soupProfile[grep('^RPL', rownames(soupProfile)),])
+  soup.RPS.sum   <- colSums(soupProfile[grep('^RPS', rownames(soupProfile)),])
+  soup.mito.sum <- colSums(soupProfile[grep('^MT-', rownames(soupProfile)),])
+  
+  soupProfile.summarized <- rbind(
+    'Ribosomal' = soup.RP.sum,
+    'Ribosomal.L' = soup.RPL.sum,
+    'Ribosomal.S' = soup.RPS.sum,
+    'Mitochondial' = soup.mito.sum,
+    soupProfile[grep('^RPL|^RPS|^MT-', rownames(soupProfile), invert = T),]
+  )
+  
+  NrColumns2Show  = min(10, nrow(soupProfile.summarized))
+  soupX.cellfree.RNA.profile.summarized = 100 * col2named.vector(soupProfile.summarized[1:NrColumns2Show,1,drop=F])
+  wbarplot(soupX.cellfree.RNA.profile.summarized
+           , ylab="% Reads in the Soup"
+           , sub = paste("Within the", basename(CellR.OutputDir), "dataset")
+           , tilted_text = T)
+  barplot_label(barplotted_variable = soupX.cellfree.RNA.profile.summarized
+                , labels = percentage_formatter(soupX.cellfree.RNA.profile.summarized/100, digitz = 2)
+                , TopOffset = .5)
+  remove("sc")
+  detach(SoupX)
+} # plotTheSoup
+
+# Work in progress ------------------------------------------------------------
+
+BarplotCellsPerObject <- function(ls.Seu = ls.Seurat, plotname="Nr.Cells.After.Filtering", names=F ) {
+  cellCounts = unlapply(ls.Seu, ncol)
+  names(cellCounts) = if (l(names) == l(ls.Seurat)) names else names(ls.Seurat) 
+  wbarplot(cellCounts, plotname = plotname,tilted_text = T, ylab="Cells")
+  barplot_label(cellCounts, TopOffset = 500, w = 4)
+}
+
+
+
+
+# Convert10Xfolders ------------------------------
+Convert10Xfolders <- function(InputDir, min.cells=10, min.features=200, updateHGNC=T) {
+  fin <- list.dirs(InputDir)[-1]
+  for (i in 1:l(fin)) { print(fin[i])
+    pathIN = fin[i]
+    fnameIN = basename(fin[i])
+    fnameOUT = ppp(p0(InputDir, 'filtered.', fnameIN), 'min.cells', min.cells, 'min.features', min.features,"Rds")
+    x <- Read10X(pathIN)
+    seu <- CreateSeuratObject(counts = x, project = fnameIN,
+                              min.cells = min.cells, min.features = min.features)
+    # update----
+    if (updateHGNC) seu <- UpdateGenesSeurat(seu)
+    saveRDS(seu, file = fnameOUT)
+  }
+}
+# Convert10Xfolders(InputDir = InputDir)
+
+
+# LoadAllSeurats -------
+LoadAllSeurats <- function(InputDir) {
+  fin <- list.files(InputDir, include.dirs = F, pattern = "*.Rds")
+  ls.Seu <- list.fromNames(fin)
+  for (i in 1:l(fin)) {print(fin[i]); ls.Seu[[i]] <- rreadRDS(p0(InputDir, fin[i]))}
+  return(ls.Seu)
+}
+# ls.Seu <- LoadAllSeurats(InputDir = InputDir)
+
+
+
+# updateHGNC helper -------
+RenameGenesSeurat <- function(SeuObj = ls.Seurat[[i]], newnames = HGNC.updated[[i]]) {
+  print("Run this before integration. It only changes SeuObj@assays$RNA@counts, @data and @scale.data")
+  RNA <- SeuObj@assays$RNA
+  
+  if (nrow(RNA) == nrow(newnames)) {
+    if(l(RNA@counts)) RNA@counts@Dimnames[[1]] <-         newnames$Suggested.Symbol
+    if(l(RNA@data)) RNA@data@Dimnames[[1]] <-             newnames$Suggested.Symbol
+    if(l(RNA@scale.data)) RNA@scale.data@Dimnames[[1]] <- newnames$Suggested.Symbol
+  } else {"Unequal gene sets: nrow(RNA) != nrow(newnames)"}
+  SeuObj@assays$RNA <- RNA
+  return(SeuObj)
+}
+
+# updateHGNC -------
+UpdateGenesSeurat <- function(seu, species_="human") {
+  HGNC.updated <- checkGeneSymbols(rownames(seu), unmapped.as.na = FALSE, map = NULL, species = species_)
+  seu <- RenameGenesSeurat(seu, newnames = HGNC.updated)
+}
+
+
+# updateHGNC plot -------
+plot.UpdateStats <- function(genes = HGNC.updated[[i]]) {
+  (MarkedAsUpdated <- genes[genes$Approved == FALSE, ])
+  (AcutallyUpdated <- sum(MarkedAsUpdated[,1] != MarkedAsUpdated[,3]))
+  (UpdateStats = c((AcutallyUpdated / nrow(genes)), AcutallyUpdated, nrow(genes)))
+  return(UpdateStats)
+}
 
 
 
