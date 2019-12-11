@@ -1,4 +1,4 @@
-# Multicore functions / parallel implementations plus speed optimized & untility functions for Seurat 2 & 3 
+# Multicore functions / parallel implementations plus speed optimized & utility functions for Seurat 2 & 3 
 
 Multicore and utility functions & implementations for Seurat using doMC / foreach packages.
 Implementations are either from me or found on the web. 
