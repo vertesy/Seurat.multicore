@@ -114,8 +114,22 @@ options(future.globals.maxSize = 4000 * 1024^2)
 - `snappy_pipe()` # Alternative, fast compression. Low compression rate, lightning fast.
 - `pigz_pipe()` # Alternative: normal gzip output (& compression rate), ~*cores faster in zipping.
 
-#### Functions in main script
+#### Functions in Seurat3.plotting.Functions.R
 
+- `umapHiLightSel()` # Highlight a set of cells based on clusterIDs provided. 
+- `qUMAP()` # Quick umaps 
+- `multiFeaturePlot.A4()` # Save multiple FeaturePlot from a list of genes on A4 jpeg 
+- `multiFeatureHeatmap.A4()` # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg  
+- `plot.UMAP.tSNE.sidebyside()` # plot a UMAP and tSNE sidebyside 
+- `sgCellFractionsBarplot.Mseq()` # Cell Fractions Barplot for MULTI-seq. sg stands for "seurat ggplot". 
+- `ssgCellFractionsBarplot.CORE()` # Cell Fractions Barplots, basic. sg stands for "seurat ggplot". 
+- `sgCellFractionsBarplot()` # Cell Fractions Barplots. sg stands for "seurat ggplot". 
+- `ww.variable.exists.and.true()` # Check if a variable exists and its value is TRUE. 
+- `save2umaps.A4()` # Save 2 umaps on A4. 
+- `save4umaps.A4()` # Save 4 umaps on A4. 
+
+
+#### Other functions
 - multiFeaturePlot.A4
   - multi-core implementation (of generating plots) did not work: it kept hanging at n*100% cpu use.
 - multiFeatureHeatmap.A4
