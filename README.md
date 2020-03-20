@@ -10,6 +10,8 @@ Implementations are either from me or found on the web.
 3. Legacy functionality for Seurat v2.x (`Seurat2.Multicore.Functions.R`)
 4. Other functionalities are in (`Seurat3.Multicore.Generic.Functions.R`, `Seurat.Functions.other.R`)
 
+#### *Notice: most of the non-multicore functionalites were migrated to [Seurat.utils](https://github.com/vertesy/Seurat.utils)`*
+
 ## Use case
 
 Some Seurat functions can be fairly slow when run on a single core. To speed up you can use all cores of your computer.
