@@ -3,7 +3,12 @@
 Multicore and utility functions & implementations for Seurat using doMC / foreach packages.
 Implementations are either from me or found on the web. 
 
+## This repository now serves 4 main purposes:
 
+1. Multicore read/write/save/load/compress functions (`Seurat3.Multicore.Read.Write.R`)
+2. Multicore implementation of single core functions via `foreach / dopar` (`Seurat.Multicore.Examples.R`)
+3. Legacy functionality for Seurat v2.x (`Seurat2.Multicore.Functions.R`)
+4. Other functionalities are in (`Seurat3.Multicore.Generic.Functions.R`, `Seurat.Functions.other.R`)
 
 ## Use case
 
@@ -14,7 +19,6 @@ Some Seurat functions can be fairly slow when run on a single core. To speed up 
 - Functions here use a `foreach` based parallel implementations/templates are mostly complementary to the implemented to Seurat's implementation 
 
 Tested on OS X, but it is in development.
-
 
 
 ## Notice
@@ -34,16 +38,22 @@ options(future.globals.maxSize = 4000 * 1024^2)
 
 
 ## Content
+`!! Notice: most of the non-multicore functionalites were migrated to https://github.com/vertesy/Seurat.utils`
+`!! Notice: Consequently, content now changed`
 
-1. **Seurat.Functions.R**: 
-   1. Multi-core / parallelized calculations
-   2. Multiplexed plotting / graphics functions without parallelization
-2. **Seurat3.Functions.R**
+1. **Seurat3.Multicore.Read.Write.R**: 
+   1. Multi-core / parallelized read/write/save/load/compress functions
+2. **Seurat.Multicore.Examples.R**
    1. Single-core functions wrapped in multi-core / parallelized foreach loops
-3. **Seurat.Multicore.Examples.R**
-   1. Single-core functions wrapped in multi-core / parallelized foreach loops
+3. **Seurat2.Multicore.Functions.R**
+   1. Legacy functionality for Seurat v2.x 
+4. **Seurat3.Multicore.Generic.Functions.R** 
+   1. Multicore
+5. **Seurat.Functions.other.R**: 
+   1. Other functionalities 
 
-
+#### Moved from here to `Seurat.utils`
+Multiplexed plotting / graphics functions without parallelization
 
 
 ## Implementations
@@ -81,6 +91,7 @@ options(future.globals.maxSize = 4000 * 1024^2)
 
 
 #### Functions in main script
+`!! Notice: most of the non-multicore functionalites were migrated to https://github.com/vertesy/Seurat.utils`
 
 - `parallel.computing.by.future()`  # Run gc(), load multi-session computing and extend memory limits.
 - `seu.Make.Cl.Label.per.cell()`  # Take a named vector (of e.g. values ="gene names", names = clusterID), and a vector of cell-IDs and make a vector of "GeneName.ClusterID".
