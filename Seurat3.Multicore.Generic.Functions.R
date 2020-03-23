@@ -12,10 +12,7 @@
 try(require(Seurat), silent = F)
 try(require(doMC), silent = F)
 
-try(source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R"), silent = T)
-try(source("~/GitHub/Seurat.multicore/Saving.and.loading.R"), silent = T)
-try(source("~/GitHub/pseudoBulk/barcode.export.from.Seurat/Seurat3.Write.Out.CBCs.for.subset-bam.R"), silent = T)
-try(source("~/GitHub/Seurat.multicore/Seurat3.plotting.Functions.R"), silent = T)
+# try(source("~/GitHub/pseudoBulk/barcode.export.from.Seurat/Seurat3.Write.Out.CBCs.for.subset-bam.R"), silent = T)
 
 # ------------------------------------------------------------------------
 

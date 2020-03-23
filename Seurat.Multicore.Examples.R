@@ -11,7 +11,7 @@ require(cowplot)
 require(stringr)
 require(tibble)
 library(Seurat)
-source ('~/GitHub/TheCorvinas/R/CodeAndRoll.R')
+source ('~/GitHub/CodeAndRoll/CodeAndRoll.R')
 source(".../Seurat.Functions.R")
 require(MarkdownReportsDev)
 require(doMC)
@@ -50,30 +50,30 @@ inNames = c(  "A"
 # read in FILTERED -------------------------------------------------------------------------------------
 if (FirstTime) {
   ls.input <- ls.Seurat <- list.fromNames(inNames)
-  
+
   # Read 10x
-  ls.input <- foreach(i=1:l(inNames)) %dopar% {  
-    read10x(p0(InputDir, Tag, inNames[i])) 
-  }; 
+  ls.input <- foreach(i=1:l(inNames)) %dopar% {
+    read10x(p0(InputDir, Tag, inNames[i]))
+  };
 
   # Create Seurat
   ls.Seurat <- foreach(i=1:l(inNames)) %dopar% {
-    CreateSeuratObject(raw.data =  ls.input[[i]], project = v.project[i], 
+    CreateSeuratObject(raw.data =  ls.input[[i]], project = v.project[i],
                        min.cells = p$min.cells, min.features = p$min.features)
-  }; 
-  
+  };
+
   # Save Seurat
   OutputDir = "/Users/..."
   foreach(i=1:l(inNames)) %dopar% {
     saveRDS(ls.Seurat[[i]], file = ppp(p0(OutputDir, 'filtered.', inNames[i]), 'min.cells', p$min.cells, 'min.features', p$min.features,"Rds") )
   }; sayy()
-  
+
 } else {
-  # Read Seurat  
+  # Read Seurat
   ls.Seurat <- foreach(i=1:l(inNames)) %dopar% {
     readRDS(file = ppp(p0(InputDir, 'filtered.', inNames[i]), 'min.cells.10.min.features.200.Rds') )
-  }; 
-  
+  };
+
 }
 
 
@@ -86,10 +86,10 @@ ls.META<- foreach(i=1:l(ls.Seurat)) %dopar% {
   META = ls.Seurat[[i]]@meta.data
   mito.genes <- grep(pattern = "^MT\\.", x = rownames(x = ls.Seurat[[i]]@data), value = TRUE)
   percent.mito <- Matrix::colSums(ls.Seurat[[i]]@data[mito.genes, ])/Matrix::colSums(ls.Seurat[[i]]@data)
-  
+
   ribo.genes <- grep(pattern = "^RPL|^RPS", x = rownames(x = ls.Seurat[[i]]@data), value = TRUE)
   percent.ribo <- Matrix::colSums(ls.Seurat[[i]]@data[ribo.genes, ])/Matrix::colSums(ls.Seurat[[i]]@data)
-  
+
   META$'percent.mito' <- percent.mito
   META$'percent.ribo' <- percent.ribo
   META$'log10.nUMI' <- as.named.vector(META[,'nUMI', drop=F])
@@ -124,7 +124,7 @@ tic()
 for (i in 1:l(inNames)) { print(i)
   ls2[[i]]  <- FindVariableGenes(object = ls2[[i]], mean.function = ExpMean, dispersion.function = LogVMR,
                                  x.low.cutoff = 0.0125, x.high.cutoff = 3, y.cutoff = 0.5 )
-  wplot_save_this(plotname = ppp("Var.genes.",inNames[i]), PNG = T)   
+  wplot_save_this(plotname = ppp("Var.genes.",inNames[i]), PNG = T)
 }; say()
 toc()
 

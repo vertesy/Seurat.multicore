@@ -1,5 +1,5 @@
 # Saving and loading R objects: performance testing
-# Modified from: https://rpubs.com/jeffjjohnston/rds_compression 
+# Modified from: https://rpubs.com/jeffjjohnston/rds_compression
 
 #### Functions in Saving.and.loading.R
 
@@ -20,9 +20,9 @@
 isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T){ # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
   path_rdata = paste0("~/Documents/RDS.files/", basename(OutDir))
   dir.create(path_rdata)
-  
+
   if (showMemObject) { memory.biggest.objects() }
-  if ( "seurat" %in% is(object) & saveParams) { 
+  if ( "seurat" %in% is(object) & saveParams) {
     try(object@misc$p <- p, silent = T)
     try(object@misc$all.genes  <- all.genes, silent = T)
   }
@@ -41,8 +41,8 @@ isave.RDS <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, savePa
 isave.RDS.pigz <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T){ # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
   path_rdata = paste0("~/Documents/RDS.files/", basename(OutDir))
   dir.create(path_rdata)
-  
-  if ( "seurat" %in% is(object) & saveParams) { 
+
+  if ( "seurat" %in% is(object) & saveParams) {
     try(object@misc$p <- p, silent = T)
     try(object@misc$all.genes  <- all.genes, silent = T)
   }
@@ -58,12 +58,12 @@ isave.RDS.pigz <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, s
 
 # Save workspace -----------------------------------------------
 # requires MarkdownReportsDev (github) and defining OutDir
-# requires github/vertesy/CodeAndRoll.r 
+# requires github/vertesy/CodeAndRoll.r
 
 isave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.
   path_rdata = paste0("~/Documents/Rdata.files/", basename(OutDir))
   dir.create(path_rdata)
-  
+
   if (showMemObject) { memory.biggest.objects() }
   fname = MarkdownReportsDev::kollapse(path_rdata, "/",idate(),...,".Rdata")
   print(fname)
@@ -77,7 +77,7 @@ isave.image <- function(..., showMemObject=T, options=c("--force", NULL)[1]){ # 
 
 subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25 ) { # subset a compressed Seurat Obj and save it in wd.
   cellIDs.keep = sampleNpc(metaDF = obj@meta.data, pc = fraction)
-  
+
   obj_Xpc <- subset(obj, cells = cellIDs.keep) # downsample
   saveRDS(obj_Xpc, compress = TRUE,
           file = ppp(p0(InputDir, 'seu.ORC'), l(cellIDs.keep), 'cells.with.min.features', p$min.features,"Rds" ) )
@@ -106,7 +106,7 @@ sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) { # Sample N % of
 
 # Wrapper layer 2 (top) -----------------------------------------------------------------------------------
 
-# read / load multiple objects 
+# read / load multiple objects
 rrRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org"), ...) { # Load a list of RDS files with parallel ungzip by pgzip.
   tictoc::tic()
   path_rdata = paste0("~/Documents/RDS.files/", basename(OutDir))
@@ -118,7 +118,7 @@ rrRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org"), ...) { # L
     fname = MarkdownReportsDev::kollapse(path_rdata , "/", obj)
     tmp.obj = rreadRDS(filename = fname, ..., cores=2)
     # pigzx multi-core decompression is not so useful, with 2 cores ist actually faster:
-    
+
     assigned.name = strsplit(obj, split = '\\.201*')[[1]][1]
     print(paste(" --> Loaded as object: ",assigned.name))
     assign(x = assigned.name,value = tmp.obj, envir = .GlobalEnv)
@@ -140,12 +140,12 @@ sssRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org.ALL", "org")
   base_name <- character()
   path_rdata = paste0("~/Documents/RDS.files/", basename(OutDir))
   iprint("Files saved under:" , path_rdata)
-  
+
   try(dir.create(path_rdata))
   for (obj in list_of_objectnames) {
     print(obj)
-    if ( "seurat" %in% is(obj)) { 
-      obj@misc$p = p 
+    if ( "seurat" %in% is(obj)) {
+      obj@misc$p = p
       obj@misc$all.genes = all.genes
     }
     base_name[i] = paste0(obj, '.', name.suffix, '.', idate(),".Rds", collapse = "")

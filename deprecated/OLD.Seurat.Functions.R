@@ -12,8 +12,8 @@ source("~/GitHub/Seurat.multicore/Saving.and.loading.R")
 
 
 # ### Functions
-# For parallel processing of other functions see 
-# 
+# For parallel processing of other functions see
+#
 # - read10x
 # - FindAllMarkers.multicore
 # - multiFeaturePlot.A4
@@ -55,7 +55,7 @@ FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0
   ls.DE <- foreach(i=0:N) %dopar% {
     Sys.sleep(j[i+1])
     FindMarkers(obj, ident.1=i, only.pos = only_pos, min.pct=min_pct, logfc.threshold = logfc_threshold)
-  };  
+  };
   tictoc::toc()
   return(ls.DE)
 }
@@ -90,7 +90,7 @@ multiFeaturePlot.A4 <- function(list.of.genes, object = org, plot.reduction='uma
   for (i in 1:l(lsG)) { print(i )
     genes = list.of.genes[lsG[[i]]]
     plotname = kpp(c(plot.reduction,i, genes, 'jpg' ))
-    
+
     jjpegA4(plotname, r = jpeg.res, q = jpeg.q)
     # try(
     FeaturePlot(object, features.plot =genes, reduction.use = plot.reduction
@@ -101,7 +101,7 @@ multiFeaturePlot.A4 <- function(list.of.genes, object = org, plot.reduction='uma
     try.dev.off()
   }
   tictoc::toc()
-}; 
+};
 
 # Save multiple FeatureHeatmaps from a list of genes on A4 jpeg -----------------------
 # code for quantile: https://github.com/satijalab/seurat/blob/master/R/plotting_internal.R
@@ -111,10 +111,10 @@ multiFeatureHeatmap.A4 <- function(list.of.genes, object = org, gene.per.page=5
                                    , cex = iround(3/gene.per.page), sep_scale = F
                                    , gene.min.exp = 'q5', gene.max.exp = 'q95'
                                    , jpeg.res = 225, jpeg.q = 90) {
-  
+
   tictoc::tic()
   list.of.genes = check.genes(list.of.genes, obj = object)
-  
+
   lsG = iterBy.over(1:l(list.of.genes), by=gene.per.page)
   for (i in 1:l(lsG)) { print(i )
     genes = list.of.genes[lsG[[i]]]
@@ -122,7 +122,7 @@ multiFeatureHeatmap.A4 <- function(list.of.genes, object = org, gene.per.page=5
     print(plotname)
     jjpegA4(plotname, r = jpeg.res, q = jpeg.q)
     try(
-      FeatureHeatmap(object, features.plot =genes , group.by = group.cells.by 
+      FeatureHeatmap(object, features.plot =genes , group.by = group.cells.by
                      , reduction.use = plot.reduction, do.return = F
                      , sep.scale = sep_scale, min.exp = gene.min.exp, max.exp = gene.max.exp
                      , pt.size = cex, key.position = "top")
@@ -144,24 +144,24 @@ plot.UMAP.tSNE.sidebyside <- function(object = org, grouping = 'res.0.6',
                                       vector_friendly = TRUE,
                                       cells_use = NULL,
                                       no_axes = T,
-                                      pt_size = 0.5, 
+                                      pt_size = 0.5,
                                       name.suffix = NULL,
                                       width = hA4, heigth = 1.75*wA4, filetype = "pdf") { # plot a UMAP and tSNE sidebyside
-  
+
   p1 <- DimPlot(object = object, reduction.use = "tsne", no.axes = no_axes, cells.use = cells_use
                 , no.legend = no_legend, do.return = do_return, do.label = do_label, label.size = label_size
-                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size) + 
+                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size) +
     ggtitle("tSNE") + theme(plot.title = element_text(hjust = 0.5))
-  
+
   p2 <- DimPlot(object = object, reduction.use = "umap", no.axes = no_axes, cells.use = cells_use
                 , no.legend = T, do.return = do_return, do.label = do_label, label.size = label_size
-                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size) + 
+                , group.by = grouping, vector.friendly = vector_friendly, pt.size = pt_size) +
     ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
-  
+
   plots = plot_grid(p1, p2, labels=c("A", "B"), ncol = 2)
   plotname=kpp( 'UMAP.tSNE', grouping, name.suffix, filetype)
-  
-  cowplot::save_plot(filename = plotname, plot = plots 
+
+  cowplot::save_plot(filename = plotname, plot = plots
                      , ncol = 2 # we're saving a grid plot of 2 columns
                      , nrow = 1 # and 2 rows
                      , base_width = width
@@ -174,7 +174,7 @@ plot.UMAP.tSNE.sidebyside <- function(object = org, grouping = 'res.0.6',
 
 # replace zero indexed clusternames ------------------------------------------------
 fixZeroIndexing.seurat <- function(ColName.metadata = 'res.0.6', obj=org) { # fix zero indexing seurat clustering
-  obj@meta.data[ ,ColName.metadata] =  as.numeric(obj@meta.data[ ,ColName.metadata])+1  
+  obj@meta.data[ ,ColName.metadata] =  as.numeric(obj@meta.data[ ,ColName.metadata])+1
   print(obj@meta.data[ ,ColName.metadata])
   return(obj)
 }
