@@ -1,6 +1,8 @@
-# ------------------------------------------------------------------------------------------
-## Seurat.Multicore.Examples.R
-# ------------------------------------------------------------------------------------------
+######################################################################
+# Seurat.Multicore.Examples.R
+######################################################################
+# source ('~/GitHub/Seurat.multicore/Seurat.Multicore.Examples.R')
+
 # DO NOT RUN - these are just code snippets not a ready to go pipeline
 
 # rm(list=ls())

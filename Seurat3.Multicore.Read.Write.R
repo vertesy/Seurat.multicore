@@ -1,11 +1,13 @@
 ######################################################################
 # Seurat3.Multicore.Read.Write.R
 ######################################################################
-# source ('~/GitHub/SeuratUtil/Read.Write.Save.Load.functions.R')
+# source ('~/GitHub/Seurat.multicore/Seurat3.Multicore.Read.Write.R')
 
 "Multicore read / write (I/O) functions are https://github.com/vertesy/Seurat.multicore"
 "Single core read / write (I/O) functions are in https://github.com/vertesy/Seurat.utils/"
 
+try(irequire(MarkdownReportsDev))
+try(irequire(tictoc))
 
 # Save an object -----------------------------------------------
 isave.RDS.pigz <- function(object, prefix =NULL, suffix=NULL, showMemObject=T, saveParams =T){ # Faster saving of workspace, and compression outside R, when it can run in the background. Seemingly quite CPU hungry and not veryefficient compression.

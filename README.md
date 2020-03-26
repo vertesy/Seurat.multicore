@@ -1,6 +1,6 @@
 # Multicore functions / parallel implementations plus speed optimized & utility functions for Seurat 2 & 3 
 
-Multicore and utility functions & implementations for Seurat using doMC / foreach packages.
+Multicore functions & implementations for Seurat using `doMC` / `foreach` packages.
 Implementations are either from me or found on the web. 
 
 ## This repository now serves 4 main purposes:
@@ -29,7 +29,7 @@ Tested on OS X, but it is in development.
 
 Solution: do not load  & setup `future` before `NormalizeData`.
 
-```
+```R
 # After NormalizeData
 library(future)
 plan("multiprocess", workers = 6)
@@ -38,6 +38,18 @@ options(future.globals.maxSize = 4000 * 1024^2)
 ```
 
 
+
+## Install
+
+1. Download (clone) this repo locally, 
+2. change the file path in each `.R` script  (to where you keep them on your computer), and
+3.  `source("~/path/to/Seurat3.Multicore.Load.R")` (Make sure you also change the path's inside this file):
+
+Alternative: Directly source each `.R` script from the web, e.g:
+
+```R
+source("https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/Seurat3.Multicore.Generic.Functions.R")
+```
 
 ## Content
 `!! Notice: most of the non-multicore functionalites were migrated to https://github.com/vertesy/Seurat.utils`
@@ -54,8 +66,7 @@ options(future.globals.maxSize = 4000 * 1024^2)
 5. **Seurat.Functions.other.R**: 
    1. Other functionalities 
 
-#### Moved from here to `Seurat.utils`
-Multiplexed plotting / graphics functions without parallelization
+
 
 
 ## Implementations
@@ -94,6 +105,8 @@ Multiplexed plotting / graphics functions without parallelization
 
 #### Functions in main script
 `!! Notice: most of the non-multicore functionalites were migrated to https://github.com/vertesy/Seurat.utils`
+
+
 
 - `parallel.computing.by.future()`  # Run gc(), load multi-session computing and extend memory limits.
 - `seu.Make.Cl.Label.per.cell()`  # Take a named vector (of e.g. values ="gene names", names = clusterID), and a vector of cell-IDs and make a vector of "GeneName.ClusterID".

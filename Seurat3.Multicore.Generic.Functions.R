@@ -1,7 +1,7 @@
-# ------------------------------------------------------------------------------------------
-## Seurat.Functions.R
-# ------------------------------------------------------------------------------------------
-# Source: self + web
+######################################################################
+# Seurat3.Multicore.Generic.Functions.R
+######################################################################
+# source ('~/GitHub/Seurat.multicore/Seurat3.Multicore.Generic.Functions.R')
 
 # NOTE:
 # Seurat v3 uses the 'future' framework for parallelization.
@@ -9,8 +9,9 @@
 
 # These provide an alternative way, advantages/disadvantages are untested.
 
-try(require(Seurat), silent = F)
-try(require(doMC), silent = F)
+try(irequire(Seurat), silent = F)
+try(irequire(doMC), silent = F)
+try(irequire(future), silent = F)
 
 # try(source("~/GitHub/pseudoBulk/barcode.export.from.Seurat/Seurat3.Write.Out.CBCs.for.subset-bam.R"), silent = T)
 
