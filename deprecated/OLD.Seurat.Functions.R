@@ -86,8 +86,8 @@ multiFeaturePlot.A4 <- function(list.of.genes, object = org, plot.reduction='uma
                                 , jpeg.res = 225, jpeg.q = 90) {
   tictoc::tic()
   list.of.genes = check.genes(list.of.genes, obj = object)
-  lsG = iterBy.over(1:l(list.of.genes), by=nr.Row*nr.Col)
-  for (i in 1:l(lsG)) { print(i )
+  lsG = iterBy.over(1:length(list.of.genes), by=nr.Row*nr.Col)
+  for (i in 1:length(lsG)) { print(i )
     genes = list.of.genes[lsG[[i]]]
     plotname = kpp(c(plot.reduction,i, genes, 'jpg' ))
 
@@ -115,8 +115,8 @@ multiFeatureHeatmap.A4 <- function(list.of.genes, object = org, gene.per.page=5
   tictoc::tic()
   list.of.genes = check.genes(list.of.genes, obj = object)
 
-  lsG = iterBy.over(1:l(list.of.genes), by=gene.per.page)
-  for (i in 1:l(lsG)) { print(i )
+  lsG = iterBy.over(1:length(list.of.genes), by=gene.per.page)
+  for (i in 1:length(lsG)) { print(i )
     genes = list.of.genes[lsG[[i]]]
     plotname = kpp(c("FeatureHeatmap",plot.reduction,i, genes, 'jpg' ))
     print(plotname)
@@ -191,7 +191,7 @@ mmeta <- function(ColName.metadata = 'batch', obj = org, as_numeric =F) { # get 
 # GetCellIDs from metadata ---------------
 GetCellIDs.from.meta <- function(obj=org, ColName.meta = 'res.0.6', values = 1) {
   idx.matching.cells = which(obj@meta.data[ , ColName.meta] %in% values)
-  iprint(l(idx.matching.cells), 'cells found.')
+  iprint(length(idx.matching.cells), 'cells found.')
   return(rownames(obj@meta.data)[idx.matching.cells])
 }
 # GetCellIDs.from.meta()

@@ -136,9 +136,9 @@ aFeaturePlot <- function (object=org, features.plot, min.cutoff = 'q1', max.cuto
 #                                  , jpeg.res = 225, jpeg.q = 90) {
 #   tictoc::tic()
 #   list.of.genes = check.genes(list.of.genes, obj = object)
-#   lsG = iterBy.over(1:l(list.of.genes), by=nr.Row*nr.Col)
+#   lsG = iterBy.over(1:length(list.of.genes), by=nr.Row*nr.Col)
 #
-#   ls.plots <- foreach(i=1:l(lsG)) %dopar% {
+#   ls.plots <- foreach(i=1:length(lsG)) %dopar% {
 #     genes = list.of.genes[lsG[[i]]]
 #     FeaturePlot(object, features.plot =genes, reduction.use = plot.reduction
 #                 , nCol = nr.Col, cols.use = colors, no.axes = T, no.legend = F, vector.friendly = T
@@ -146,7 +146,7 @@ aFeaturePlot <- function (object=org, features.plot, min.cutoff = 'q1', max.cuto
 #                 , pt.size = cex)
 #   }
 #   print ("Plots are calculated.")
-#   for (i in 1:l(lsG)) { print(i )
+#   for (i in 1:length(lsG)) { print(i )
 #     plotname = kpp(c(plot.reduction,i, genes, 'jpg' ))
 #     jjpegA4(plotname, r = jpeg.res, q = jpeg.q)
 #     print(ls.plots[[i]])

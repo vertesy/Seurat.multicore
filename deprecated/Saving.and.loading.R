@@ -80,7 +80,7 @@ subsetSeuObj.and.Save <- function(obj=ORC, fraction = 0.25 ) { # subset a compre
 
   obj_Xpc <- subset(obj, cells = cellIDs.keep) # downsample
   saveRDS(obj_Xpc, compress = TRUE,
-          file = ppp(p0(InputDir, 'seu.ORC'), l(cellIDs.keep), 'cells.with.min.features', p$min.features,"Rds" ) )
+          file = ppp(paste0(InputDir, 'seu.ORC'), length(cellIDs.keep), 'cells.with.min.features', p$min.features,"Rds" ) )
   say()
 }
 
@@ -99,7 +99,7 @@ seuSaveRds <- function(object = ls.Seurat, tags = setupFlags, use_Original_OutDi
 
 sampleNpc <- function(metaDF = MetaData[which(Pass),], pc=0.1) { # Sample N % of a dataframe (obj@metadata), and return the cell IDs.
   cellIDs = rownames(metaDF)
-  nr_cells = floor(l(cellIDs) * pc)
+  nr_cells = floor(length(cellIDs) * pc)
   cellIDs.keep = sample(cellIDs, size = nr_cells, replace = FALSE)
   return(cellIDs.keep)
 }

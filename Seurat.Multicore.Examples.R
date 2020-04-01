@@ -54,26 +54,26 @@ if (FirstTime) {
   ls.input <- ls.Seurat <- list.fromNames(inNames)
 
   # Read 10x
-  ls.input <- foreach(i=1:l(inNames)) %dopar% {
-    read10x(p0(InputDir, Tag, inNames[i]))
+  ls.input <- foreach(i=1:length(inNames)) %dopar% {
+    read10x(paste0(InputDir, Tag, inNames[i]))
   };
 
   # Create Seurat
-  ls.Seurat <- foreach(i=1:l(inNames)) %dopar% {
+  ls.Seurat <- foreach(i=1:length(inNames)) %dopar% {
     CreateSeuratObject(raw.data =  ls.input[[i]], project = v.project[i],
                        min.cells = p$min.cells, min.features = p$min.features)
   };
 
   # Save Seurat
   OutputDir = "/Users/..."
-  foreach(i=1:l(inNames)) %dopar% {
-    saveRDS(ls.Seurat[[i]], file = ppp(p0(OutputDir, 'filtered.', inNames[i]), 'min.cells', p$min.cells, 'min.features', p$min.features,"Rds") )
+  foreach(i=1:length(inNames)) %dopar% {
+    saveRDS(ls.Seurat[[i]], file = ppp(paste0(OutputDir, 'filtered.', inNames[i]), 'min.cells', p$min.cells, 'min.features', p$min.features,"Rds") )
   }; sayy()
 
 } else {
   # Read Seurat
-  ls.Seurat <- foreach(i=1:l(inNames)) %dopar% {
-    readRDS(file = ppp(p0(InputDir, 'filtered.', inNames[i]), 'min.cells.10.min.features.200.Rds') )
+  ls.Seurat <- foreach(i=1:length(inNames)) %dopar% {
+    readRDS(file = ppp(paste0(InputDir, 'filtered.', inNames[i]), 'min.cells.10.min.features.200.Rds') )
   };
 
 }
@@ -84,7 +84,7 @@ if (FirstTime) {
 
 batch = as.factor(1:3)
 
-ls.META<- foreach(i=1:l(ls.Seurat)) %dopar% {
+ls.META<- foreach(i=1:length(ls.Seurat)) %dopar% {
   META = ls.Seurat[[i]]@meta.data
   mito.genes <- grep(pattern = "^MT\\.", x = rownames(x = ls.Seurat[[i]]@data), value = TRUE)
   percent.mito <- Matrix::colSums(ls.Seurat[[i]]@data[mito.genes, ])/Matrix::colSums(ls.Seurat[[i]]@data)
@@ -107,23 +107,23 @@ for (i in 1:3) { ls.Seurat[[i]]@meta.data <- ls.META[[i]] }
 
 # FilterCells ------------------------------
 
-ls2<- foreach(i=1:l(ls2)) %dopar% {
+ls2<- foreach(i=1:length(ls2)) %dopar% {
   FilterCells(object = ls2[[i]], subset.names = c("nGene", "percent.mito", "percent.ribo"),
               low.thresholds = c(p$thr.hp.nGene, -Inf, -Inf),
               high.thresholds = c(p$thr.lp.nGene, p$thr.lp.mito, p$thr.lp.ribo))
 }; say()
-l(ls2); ls2
+length(ls2); ls2
 
 
 # NormalizeData ------------------------------
-ls2<- foreach(i=1:l(ls2)) %dopar% {
+ls2<- foreach(i=1:length(ls2)) %dopar% {
   NormalizeData(object = ls2[[i]], normalization.method = "LogNormalize", scale.factor = 10000)
 }; say()
-l(ls2); ls20
+length(ls2); ls20
 
 # FindVariableGenes cannot be parallelized sadly   ------------------------------
 tic()
-for (i in 1:l(inNames)) { print(i)
+for (i in 1:length(inNames)) { print(i)
   ls2[[i]]  <- FindVariableGenes(object = ls2[[i]], mean.function = ExpMean, dispersion.function = LogVMR,
                                  x.low.cutoff = 0.0125, x.high.cutoff = 3, y.cutoff = 0.5 )
   wplot_save_this(plotname = ppp("Var.genes.",inNames[i]), PNG = T)
@@ -131,7 +131,7 @@ for (i in 1:l(inNames)) { print(i)
 toc()
 
 # ScaleData is parallelizedialready  ------------------------------
-for (i in 1:l(inNames)) { print(i)
+for (i in 1:length(inNames)) { print(i)
   ls2[[i]]  <- ScaleData(object = ls2[[i]], vars.to.regress = ls.vars2regress[[i]], do.par = T, num.cores = 6)
 }; say()
 
