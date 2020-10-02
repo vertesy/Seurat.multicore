@@ -1,7 +1,7 @@
 ######################################################################
 # Seurat3.Multicore.Generic.Functions.R
 ######################################################################
-# source ('~/GitHub/Seurat.multicore/Seurat3.Multicore.Generic.Functions.R')
+# source ('~/GitHub/Packages/Seurat.multicore/Seurat3.Multicore.Generic.Functions.R')
 
 # NOTE:
 # Seurat v3 uses the 'future' framework for parallelization.
@@ -29,10 +29,10 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
     -> Therefore it is important to clean up the memory space before setting up multicore computation.
 
     Loaded: library(future), workers set to 6 (def),set Max mem size to 2GB (def)."   )
-  
+
   gc(full = T)
   try(memory.biggest.objects())
-  
+
   library(future)
   # plan("multiprocess", workers = workers_)
   plan("multisession", workers = workers_)
@@ -53,7 +53,7 @@ FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0
   ls.DE <- foreach(i=0:N) %dopar% {
     Sys.sleep(j[i+1])
     FindMarkers(object = obj, ident.1=i, only.pos = only_pos, min.pct=min_pct, logfc.threshold = logfc_threshold)
-  };  
+  };
   tictoc::toc()
   return(ls.DE)
 }

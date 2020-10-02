@@ -6,8 +6,8 @@
 
 require(Seurat)
 require(doMC)
-source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R")
-source("~/GitHub/Seurat.multicore/Saving.and.loading.R")
+source("~/GitHub/Packages/Seurat.multicore/Seurat.Functions.other.R")
+source("~/GitHub/Packages/Seurat.multicore/Saving.and.loading.R")
 
 
 

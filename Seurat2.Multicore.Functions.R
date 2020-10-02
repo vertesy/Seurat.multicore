@@ -1,7 +1,7 @@
 ######################################################################
 # Seurat2.Multicore.Functions.R
 ######################################################################
-# source ('~/GitHub/Seurat.multicore/Seurat2.Multicore.Functions.R')
+# source ('~/GitHub/Packages/Seurat.multicore/Seurat2.Multicore.Functions.R')
 # Source: self + web
 
 try(require(Seurat), silent = F)
@@ -20,7 +20,7 @@ FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0
   ls.DE <- foreach(i=0:N) %dopar% {
     Sys.sleep(j[i+1])
     FindMarkers(object = obj, ident.1=i, only.pos = only_pos, min.pct=min_pct, logfc.threshold = logfc_threshold)
-  };  
+  };
   tictoc::toc()
   return(ls.DE)
 }

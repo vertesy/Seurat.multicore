@@ -2,7 +2,7 @@
 ## Seurat.Functions.other.R
 # ------------------------------------------------------------------------------------------
 # Source: self + web
-# source("~/GitHub/Seurat.multicore/Seurat.Functions.other.R")
+# source("~/GitHub/Packages/Seurat.multicore/Seurat.Functions.other.R")
 
 # ------------------------------
 
