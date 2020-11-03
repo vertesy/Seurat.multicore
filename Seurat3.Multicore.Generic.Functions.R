@@ -9,9 +9,9 @@
 
 # These provide an alternative way, advantages/disadvantages are untested.
 
-try(irequire(Seurat), silent = F)
-try(irequire(doMC), silent = F)
-try(irequire(future), silent = F)
+try(require(Seurat), silent = F)
+try(require(doMC), silent = F)
+try(require(future), silent = F)
 
 # try(source("~/GitHub/pseudoBulk/barcode.export.from.Seurat/Seurat3.Write.Out.CBCs.for.subset-bam.R"), silent = T)
 
