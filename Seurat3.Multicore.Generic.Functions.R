@@ -11,7 +11,7 @@
 
 try(require(Seurat), silent = F)
 try(require(doMC), silent = F)
-try(require(future), silent = F)
+# try(require(future), silent = T)
 
 # try(source("~/GitHub/pseudoBulk/barcode.export.from.Seurat/Seurat3.Write.Out.CBCs.for.subset-bam.R"), silent = T)
 
