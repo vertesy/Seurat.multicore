@@ -1,7 +1,7 @@
 ######################################################################
 # Seurat3.Multicore.Load.from.GitHub.R
 ######################################################################
-# try(source ('https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/Seurat3.Multicore.Load.from.GitHub.R'), silent=T)
+# try(source('https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/Seurat3.Multicore.Load.from.GitHub.R'), silent=T)
 
 ### Seurat 3 ------------------------
 try(source("https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/Seurat3.Multicore.Read.Write.R"))

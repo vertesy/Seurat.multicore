@@ -74,7 +74,7 @@ FindAllMarkers.multicore <- function(obj = org, min_pct = 0.2, logfc_threshold=0
 # check.genes ---------------------------------------
 check.genes <- function(list.of.genes = ClassicMarkers, obj = org) { # check if genes exist in your dataset
   missingGenes = setdiff(list.of.genes, rownames(obj@data))
-  if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
+  if (length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
   intersect(list.of.genes, rownames(obj@data))
 }
 

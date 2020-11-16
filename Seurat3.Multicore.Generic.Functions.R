@@ -1,7 +1,7 @@
 ######################################################################
 # Seurat3.Multicore.Generic.Functions.R
 ######################################################################
-# source ('~/GitHub/Packages/Seurat.multicore/Seurat3.Multicore.Generic.Functions.R')
+# source('~/GitHub/Packages/Seurat.multicore/Seurat3.Multicore.Generic.Functions.R')
 
 # NOTE:
 # Seurat v3 uses the 'future' framework for parallelization.

@@ -1,7 +1,7 @@
 ######################################################################
 # Seurat2.Multicore.Functions.R
 ######################################################################
-# source ('~/GitHub/Packages/Seurat.multicore/Seurat2.Multicore.Functions.R')
+# source('~/GitHub/Packages/Seurat.multicore/Seurat2.Multicore.Functions.R')
 # Source: self + web
 
 try(require(Seurat), silent = F)

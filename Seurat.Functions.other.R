@@ -7,9 +7,9 @@
 # ------------------------------
 
 
-MergeDuplicateGenesSeurat <- function (seu=ls.Seurat[[i]]){ # How many entries are duplicated
+MergeDuplicateGenesSeurat <- function(seu=ls.Seurat[[i]]){ # How many entries are duplicated
   duplicated(rownames(seu))
-  if(summarize & y){
+  if (summarize & y){
     x = table(vec); x= x[x>1]-1;
     print("The following elements have >1 extra copies:")
     print(x) # table formatting requires a separate entry
@@ -24,7 +24,7 @@ umap <- function(gene='DLX5', obj =org, pt_size =1) {
 }
 
 # FeaturePlot with different defaults ------------------------------------------------------------------
-aFeaturePlot <- function (object=org, features.plot, min.cutoff = 'q1', max.cutoff = 'q99',
+aFeaturePlot <- function(object=org, features.plot, min.cutoff = 'q1', max.cutoff = 'q99',
                           dim.1 = 1, dim.2 = 2, cells.use = NULL, pt.size = 1
                           , cols.use = c("yellow", "red"), pch.use = 16, overlay = FALSE, do.hover = FALSE,
                           data.hover = "ident", do.identify = FALSE, reduction.use = "umap",
@@ -267,7 +267,7 @@ if (F) {
 # ------------------------------------------------------------
 # check.genes <- function(list.of.genes = ClassicMarkers, obj = seu3) { # check if genes exist in your dataset
 #   missingGenes = setdiff(list.of.genes, rownames(obj))
-#   if(length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
+#   if (length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
 #   intersect(list.of.genes, rownames(obj))
 # }
 

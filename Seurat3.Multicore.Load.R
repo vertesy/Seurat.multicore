@@ -1,7 +1,7 @@
 ######################################################################
 # Seurat3.Multicore.Load.R
 ######################################################################
-# source ('~/GitHub/Packages/Seurat.multicore/Seurat3.Multicore.Load.R')
+# source('~/GitHub/Packages/Seurat.multicore/Seurat3.Multicore.Load.R')
 
 ### Seurat 3 ------------------------
 try(source("~/GitHub/Packages/Seurat.multicore/Seurat3.Multicore.Read.Write.R"))

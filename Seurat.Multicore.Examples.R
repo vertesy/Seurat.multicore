@@ -1,11 +1,11 @@
 ######################################################################
 # Seurat.Multicore.Examples.R
 ######################################################################
-# source ('~/GitHub/Packages/Seurat.multicore/Seurat.Multicore.Examples.R')
+# source('~/GitHub/Packages/Seurat.multicore/Seurat.Multicore.Examples.R')
 
 # DO NOT RUN - these are just code snippets not a ready to go pipeline
 
-# rm(list=ls())
+# rm(list = ls())
 require(tictoc)
 require(dplyr)
 require(gtools)
@@ -13,7 +13,7 @@ require(cowplot)
 require(stringr)
 require(tibble)
 library(Seurat)
-source ('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R')
+source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R')
 source(".../Seurat.Functions.R")
 require(MarkdownReportsDev)
 require(doMC)

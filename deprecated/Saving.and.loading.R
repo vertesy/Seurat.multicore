@@ -159,7 +159,7 @@ sssRDS <- function(list_of_objectnames = c("ls.Seurat", "ls2", "org.ALL", "org")
 # Wrapper layer 1 -----------------------------------------------------------------------------------
 ssaveRDS <- function(object, filename, con_func = list(pigz_pipe, snappy_pipe)[[1]], func_type = c("pipe", "builtin")[1], ...) { # Save an object with parallel gzip by pgzip.
   tictoc::tic()
-  if(func_type == "builtin") {
+  if (func_type == "builtin") {
     con <- con_func(filename)
   } else {
     con <- con_func(filename, mode="write")
@@ -171,7 +171,7 @@ ssaveRDS <- function(object, filename, con_func = list(pigz_pipe, snappy_pipe)[[
 
 rreadRDS <- function(filename, con_func = list(pigz_pipe, snappy_pipe)[[1]], func_type = c("pipe", "builtin")[1], ...) {  # Read an object with parallel ungzip by pgzip.
   tictoc::tic()
-  if(func_type == "builtin") {
+  if (func_type == "builtin") {
     con <- con_func(filename)
   } else {
     con <- con_func(filename, mode="read", ...)
@@ -185,7 +185,7 @@ rreadRDS <- function(filename, con_func = list(pigz_pipe, snappy_pipe)[[1]], fun
 # Pipes -----------------------------------------------------------------------------------
 
 snappy_pipe <- function(filename, mode="read") { # Alternative, fast compression. Low compression rate, lightning fast.
-  if(mode == "read") {
+  if (mode == "read") {
     con <- pipe(paste0("cat ", filename, " | snzip -dc"), "rb")
   } else {
     con <- pipe(paste0("snzip > ", filename), "wb")
@@ -195,7 +195,7 @@ snappy_pipe <- function(filename, mode="read") { # Alternative, fast compression
 
 
 pigz_pipe <- function(filename, mode="read", cores=6) { # Alternative: normal gzip output (& compression rate), ~*cores faster in zipping.
-  if(mode == "read") {
+  if (mode == "read") {
     con <- pipe(paste0("cat ", filename, " | pigz -dcp ", cores), "rb")
   } else {
     con <- pipe(paste0("pigz -p ", cores, " > ", filename), "wb")
