@@ -5,7 +5,7 @@
 
 ### Seurat 3 ------------------------
 try(source("https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/Functions/Seurat3.Multicore.Read.Write.R"))
-try(source("https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/Seurat3.Multicore.Generic.Functions.R"))
+try(source("https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/Functions/Seurat3.Multicore.Generic.Functions.R"))
 # try(source("https://raw.githubusercontent.com/vertesy/Seurat.multicore/master/Seurat.Functions.other.R"))
 
 
