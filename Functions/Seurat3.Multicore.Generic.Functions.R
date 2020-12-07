@@ -34,8 +34,8 @@ parallel.computing.by.future <- function(workers_ = 6, maxMemSize = 4000 * 1024^
   try(memory.biggest.objects())
 
   library(future)
-  # plan("multiprocess", workers = workers_)
-  plan("multisession", workers = workers_)
+  plan("multiprocess", workers = workers_)
+  # plan("multisession", workers = workers_)
   # So to set Max mem size to 2GB, you would run :
   options(future.globals.maxSize = maxMemSize)
 }
