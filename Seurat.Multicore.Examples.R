@@ -13,9 +13,11 @@ require(cowplot)
 require(stringr)
 require(tibble)
 library(Seurat)
-source('/GitHub/Packages/CodeAndRoll/CodeAndRoll.R')
 source(".../Seurat.Functions.R")
-require(MarkdownReportsDev)
+
+library(Stringendo)
+library(CodeAndRoll2)
+require(MarkdownReports)
 require(doMC)
 registerDoMC(6)
 

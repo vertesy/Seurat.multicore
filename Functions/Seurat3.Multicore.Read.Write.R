@@ -6,7 +6,7 @@
 "Multicore read / write (I/O) functions are https://github.com/vertesy/Seurat.multicore"
 "Single core read / write (I/O) functions are in https://github.com/vertesy/Seurat.utils/"
 
-try(require(MarkdownReportsDev))
+try(require(MarkdownReports))
 try(require(tictoc))
 try(require(readr))
 try (source ('https://raw.githubusercontent.com/vertesy/CodeAndRoll/master/CodeAndRoll.R'),silent= F)
