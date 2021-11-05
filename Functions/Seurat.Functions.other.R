@@ -128,35 +128,6 @@ aFeaturePlot <- function(object=org, features.plot, min.cutoff = 'q1', max.cutof
 
 
 
-# Save multiple FeaturePlot from a list of genes on A4 jpeg ------------------------
-# "Does not work!"
-# amultiFeaturePlot.A4 <- function(list.of.genes, object = org, plot.reduction='umap'
-#                                  , colors=c("grey", "red"), nr.Col=2, nr.Row =4, cex = ceiling(10/(nr.Col*nr.Row))
-#                                  , gene.min.exp = 'q01', gene.max.exp = 'q99'
-#                                  , jpeg.res = 225, jpeg.q = 90) {
-#   tictoc::tic()
-#   list.of.genes = check.genes(list.of.genes, obj = object)
-#   lsG = iterBy.over(1:length(list.of.genes), by=nr.Row*nr.Col)
-#
-#   ls.plots <- foreach(i=1:length(lsG)) %dopar% {
-#     genes = list.of.genes[lsG[[i]]]
-#     FeaturePlot(object, features.plot =genes, reduction.use = plot.reduction
-#                 , nCol = nr.Col, cols.use = colors, no.axes = T, no.legend = F, vector.friendly = T
-#                 , min.cutoff = gene.min.exp, max.cutoff = gene.max.exp, do.return = T
-#                 , pt.size = cex)
-#   }
-#   print ("Plots are calculated.")
-#   for (i in 1:length(lsG)) { print(i )
-#     plotname = kpp(c(plot.reduction,i, genes, 'jpg' ))
-#     jjpegA4(plotname, r = jpeg.res, q = jpeg.q)
-#     print(ls.plots[[i]])
-#     try.dev.off()
-#   }
-#   tictoc::toc()
-# };
-# "Does not work!"
-
-
 
 # LabelPoint ------------------------
 LabelPoint <- function(plot, genes, exp.mat, adj.x.t = 0, adj.y.t = 0, adj.x.s = 0,
@@ -263,22 +234,4 @@ if (F) {
   is(x)
 
 } # if
-
-# ------------------------------------------------------------
-# check.genes <- function(list.of.genes = ClassicMarkers, obj = seu3) { # check if genes exist in your dataset
-#   missingGenes = setdiff(list.of.genes, rownames(obj))
-#   if (length(missingGenes)>0) {iprint("Genes not found in the data:", missingGenes)}
-#   intersect(list.of.genes, rownames(obj))
-# }
-
-
-
-# ------------------------------------------------------------
-
-# ------------------------------------------------------------
-
-# ------------------------------------------------------------
-
-# ------------------------------------------------------------
-
 
